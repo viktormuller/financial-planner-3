@@ -5,7 +5,14 @@ import { Household } from "./Household";
 import {} from "react-bootstrap";
 import { ChildCostInput } from "./ChildInput";
 export class HouseholdInput extends Component<
-  { household: Household; onChange },
+  { household: Household;
+    onChange;
+    onChildCareStrategyChange;
+    onK12StrategyChange;
+    onAfterSchoolCareChange;
+    onCollegeStrategyChange;
+    onCollegeSavingChange;
+    onChildSupplyChange; },
   Household
 > {
   constructor(props) {
@@ -18,6 +25,12 @@ export class HouseholdInput extends Component<
       <ChildCostInput
         children={this.state.children}
         childStrategy={this.state.childStrategy}
+        onChildCareStrategyChange={this.props.onChildCareStrategyChange}
+        onK12StrategyChange={this.props.onK12StrategyChange}
+        onAfterSchoolCareChange={this.props.onAfterSchoolCareChange}
+        onCollegeStrategyChange={this.props.onCollegeStrategyChange}
+	onCollegeSavingChange={this.props.onCollegeSavingChange}
+	onChildSupplyChange={this.props.onChildSupplyChange}
         onChange={this.props.onChange}
       />
     );

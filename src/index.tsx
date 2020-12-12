@@ -64,6 +64,60 @@ class App extends Component<AppProps, AppState> {
     );
   }
 
+  onChildCareStrategyChange(newStrat){
+    var newHH = this.state.household;
+    newHH.childStrategy.childCareStrategy = newStrat;
+    this.setState({household:newHH});
+    this.resetRecalcTimer();
+  }
+
+  onK12StrategyChange(newStrat){
+    var newHH = this.state.household;
+    newHH.childStrategy.k12Strategy = newStrat;
+    this.setState({household:newHH});
+    this.resetRecalcTimer();
+  }
+
+  onAfterSchoolCareChange(newStrat){
+    var newHH = this.state.household;
+    newHH.childStrategy.afterSchoolCare = newStrat;
+    this.setState({household:newHH});
+    this.resetRecalcTimer();
+  }
+
+  onCollegeStrategyChange(newStrat){
+    var newHH = this.state.household;
+    newHH.childStrategy.collegeStrategy = newStrat;
+    this.setState({household:newHH});
+    this.resetRecalcTimer();
+  }
+
+  onCollegeSavingChange(value){
+    var newHH = this.state.household;
+    newHH.childStrategy.collegeSaving = new MonetaryAmount(value.floatValue);
+    this.setState({household:newHH});
+    this.resetRecalcTimer();
+  }
+
+  onChildSupplyChange(value){
+    var newHH = this.state.household;
+    newHH.childStrategy.annualSupply = value;
+    this.setState({household:newHH});
+    this.resetRecalcTimer();
+  }
+
+  resetRecalcTimer(){
+    if (this.recalcTimeout) window.clearTimeout(this.recalcTimeout);
+
+    this.recalcTimeout = window.setTimeout(() => {
+      this.setState({
+        financials: {
+          childCost: this.calculator.childCost(this.state.household)
+        }
+      });
+    }, 300);
+  }
+
   onChange() {
     if (this.recalcTimeout) window.clearTimeout(this.recalcTimeout);
 
@@ -95,6 +149,12 @@ class App extends Component<AppProps, AppState> {
               <HouseholdInput
                 household={this.state.household}
                 onChange={this.onChange.bind(this)}
+		onChildCareStrategyChange={this.onChildCareStrategyChange.bind(this)}
+		onK12StrategyChange={this.onK12StrategyChange.bind(this)}
+		onAfterSchoolCareChange={this.onAfterSchoolCareChange.bind(this)}
+		onCollegeStrategyChange={this.onCollegeStrategyChange.bind(this)}
+		onCollegeSavingChange={this.onCollegeSavingChange.bind(this)}
+		onChildSupplyChange={this.onChildSupplyChange.bind(this)}
               />
             </Col>
             <Col xs={6} className="pt-5 d-flex flex-column h-100">

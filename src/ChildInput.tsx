@@ -33,15 +33,21 @@ import RangeSlider from "react-bootstrap-range-slider";
 import NumberFormat from "react-number-format";
 
 export class ChildCostInput extends Component<
-  { children: Child[]; childStrategy: ChildStrategy; onChange },
-  { children: Child[]; childStrategy: ChildStrategy }
+  { children: Child[];
+    childStrategy: ChildStrategy;
+    onChange;
+    onChildCareStrategyChange;
+    onK12StrategyChange;
+    onAfterSchoolCareChange;
+    onCollegeStrategyChange;
+    onCollegeSavingChange;
+    onChildSupplyChange },
+  { children: Child[];  }
 > {
   constructor(props) {
     super(props);
     this.state = {
-      children: props.children,
-      childStrategy: props.childStrategy
-    };
+      children: props.children    };
   }
 
   addChild(event) {
@@ -123,32 +129,34 @@ export class ChildCostInput extends Component<
             <Form>
               {eldestChildYoB + MAX_CHILD_CARE_AGE >= nextYear && (
                 <ChildCareStrategyInput
-                  strategy={this.state.childStrategy}
-                  onChange={this.props.onChange}
+                  strategy={this.props.childStrategy.childCareStrategy}
+                  onChange={this.props.onChildCareStrategyChange}
                 />
               )}
               {eldestChildYoB + MAX_K12_AGE >= nextYear && (
                 <React.Fragment>
                   <K12StrategyInput
-                    strategy={this.state.childStrategy}
-                    onChange={this.props.onChange}
+                    strategy={this.props.childStrategy.k12Strategy}
+                    onChange={this.props.onK12StrategyChange}
                   />
                   <AfterSchoolCareInput
-                    strategy={this.state.childStrategy}
-                    onChange={this.props.onChange}
+                    strategy={this.props.childStrategy.afterSchoolCare}
+                    onChange={this.props.onAfterSchoolCareChange}
                   />
                 </React.Fragment>
               )}
               {eldestChildYoB + MAX_COLLEGE_AGE >= nextYear && (
                 <CollegeStrategyInput
-                  strategy={this.state.childStrategy}
-                  onChange={this.props.onChange}
+                  strategy={this.props.childStrategy.collegeStrategy}
+		  collegeSaving={this.props.childStrategy.collegeSaving}
+                  onCollegeStrategyChange={this.props.onCollegeStrategyChange}
+		  onCollegeSavingChange={this.props.onCollegeSavingChange}
                 />
               )}
               {eldestChildYoB + MAX_CHILD_SUPPORT_AGE >= nextYear && (
                 <ChildSupplyInput
-                  strategy={this.state.childStrategy}
-                  onChange={this.props.onChange}
+                  annualSupply={this.props.childStrategy.annualSupply}
+                  onChange={this.props.onChildSupplyChange}
                 />
               )}
             </Form>
@@ -224,18 +232,9 @@ export class ChildInput extends Component<ChildProps, { child: Child }> {
 }
 
 export class ChildCareStrategyInput extends Component<
-  { strategy: ChildStrategy; onChange },
-  ChildStrategy
-> {
-  constructor(props) {
-    super(props);
-    this.state = props.strategy;
-  }
+  { strategy: ChildCareStrategy; onChange }> {
 
-  onChange(value) {
-    this.setState({childCareStrategy: value});
-    this.props.onChange();
-  }
+
   render() {
     return (
       <FormGroup>
@@ -245,8 +244,8 @@ export class ChildCareStrategyInput extends Component<
             className="w-100"
             name="child_care"
             type="radio"
-            value={this.state.childCareStrategy}
-            onChange={this.onChange.bind(this)}
+            value={this.props.strategy}
+            onChange={this.props.onChange}
           >
             {Object.keys(ChildCareStrategy).map(strat => {
               if (!isNaN(Number(strat)))
@@ -274,30 +273,19 @@ export class ChildCareStrategyInput extends Component<
 }
 
 export class K12StrategyInput extends Component<
-  { strategy: ChildStrategy; onChange },
-  ChildStrategy
-> {
-  constructor(props) {
-    super(props);
-    this.state = props.strategy;
-  }
-
-  onChange(value) {
-    this.setState({k12Strategy : value});
-    this.props.onChange();
-  }
+  { strategy: K12Strategy; onChange }> {
 
   render() {
     return (
-      <FormGroup>
+      <FormGroup> 
         <Form.Label>K-12 education (6-18 years)</Form.Label>
         <Form.Row className="mx-0">
           <ToggleButtonGroup
             style={{ width: "100%" }}
             name="k12"
             type="radio"
-            value={this.state.k12Strategy}
-            onChange={this.onChange.bind(this)}
+            value={this.props.strategy}
+            onChange={this.props.onChange}
           >
             {Object.keys(K12Strategy).map(strat => {
               if (!isNaN(Number(strat)))
@@ -324,18 +312,9 @@ export class K12StrategyInput extends Component<
 }
 
 export class AfterSchoolCareInput extends Component<
-  { strategy: ChildStrategy; onChange },
-  ChildStrategy
+  { strategy: boolean; onChange }
 > {
-  constructor(props) {
-    super(props);
-    this.state = props.strategy;
-  }
 
-  onChange(value) {
-    this.setState({afterSchoolCare: Boolean(value)});
-    this.props.onChange();
-  }
 
   render() {
     return (
@@ -346,8 +325,8 @@ export class AfterSchoolCareInput extends Component<
             style={{ width: "100%" }}
             name="k12"
             type="radio"
-            value={this.state.afterSchoolCare}
-            onChange={this.onChange.bind(this)}
+            value={this.props.strategy}
+            onChange={this.props.onChange}
           >
             <ToggleButton
               variant="outline-secondary"
@@ -377,20 +356,15 @@ export class AfterSchoolCareInput extends Component<
 }
 
 export class ChildSupplyInput extends Component<
-  { strategy: ChildStrategy; onChange },
-  ChildStrategy
+  { annualSupply: MonetaryAmount; onChange }
 > {
-  constructor(props) {
-    super(props);
-    this.state = props.strategy;
+
+  onChange(event){
+    var value = (new MonetaryAmount(Number(event.target.value) * 12));
+    console.log("Annual supply updated to: " + value.amount);
+    this.props.onChange(value);
   }
 
-  onChange(event) {
-    this.setState({annualSupply : new MonetaryAmount(
-      Number(event.target.value) * 12
-    )});
-    this.props.onChange();
-  }
   render() {
     return (
       <FormGroup>
@@ -404,11 +378,11 @@ export class ChildSupplyInput extends Component<
             min={MONTHLY_CHILD_SUPPLY_MIN.amount}
             max={MONTHLY_CHILD_SUPPLY_MAX.amount}
             step={100}
-            value={this.state.annualSupply.amount / 12}
+            value={this.props.annualSupply.amount / 12}
             onChange={this.onChange.bind(this)}
             tooltip="on"
             tooltipLabel={value =>
-              this.state.annualSupply.currency + " " + d3.format(",")(value)
+              this.props.annualSupply.currency + " " + d3.format(",")(value)
             }
           />
         </div>
@@ -418,23 +392,12 @@ export class ChildSupplyInput extends Component<
 }
 
 export class CollegeStrategyInput extends Component<
-  { strategy: ChildStrategy; onChange },
-  ChildStrategy
+  { strategy: CollegeStrategy;
+    collegeSaving:MonetaryAmount; 
+    onCollegeStrategyChange;
+    onCollegeSavingChange }
 > {
-  constructor(props) {
-    super(props);
-    this.state = props.strategy;
-  }
 
-  onChange(value) {
-    this.setState({collegeStrategy: value});
-    this.props.onChange();
-  }
-
-  onCollegeSavingChange(values) {
-    this.setState({collegeSaving : new MonetaryAmount(values.floatValue)});
-    this.props.onChange();
-  }
 
   render() {
     return (
@@ -446,8 +409,8 @@ export class CollegeStrategyInput extends Component<
               style={{ width: "100%" }}
               name="college"
               type="radio"
-              value={this.state.collegeStrategy}
-              onChange={this.onChange.bind(this)}
+              value={this.props.strategy}
+              onChange={this.props.onCollegeStrategyChange}
             >
               {Object.keys(CollegeStrategy).map(strat => {
                 if (!isNaN(Number(strat)))
@@ -482,9 +445,9 @@ export class CollegeStrategyInput extends Component<
                 thousandSeparator=","
                 prefix="$"
                 className="text-right"
-                value={this.state.collegeSaving.amount}
+                value={this.props.collegeSaving.amount}
                 customInput={Form.Control}
-                onValueChange={this.onCollegeSavingChange.bind(this)}
+                onValueChange={this.props.onCollegeSavingChange}
               />
             </Col>
           </Form.Row>
