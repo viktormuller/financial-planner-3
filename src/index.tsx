@@ -39,7 +39,7 @@ class App extends Component<AppProps, AppState> {
     var textForNoCostFirstYear = "No child cost in first year.";
 
     return (
-      <React.Fragment>
+      <div className="py-5 md-sticky">
         {firstYearCost && firstYearCost.amount > 0 ? (
           <div className="text-center flex-shrink-0">
             {textForFirstYear}
@@ -60,7 +60,7 @@ class App extends Component<AppProps, AppState> {
           data={this.state.financials.childCost}
           startYear={this.calculator.startYear}
         />
-      </React.Fragment>
+      </div>
     );
   }
 
@@ -144,8 +144,8 @@ class App extends Component<AppProps, AppState> {
             maxHeight: "calc(100% - 72px)"
           }}
         >
-          <Row className="h-100">
-            <Col xs={6} className="h-100">
+          <Row>
+            <Col xs={12} md={6}>
               <HouseholdInput
                 household={this.state.household}
                 onChange={this.onChange.bind(this)}
@@ -157,7 +157,7 @@ class App extends Component<AppProps, AppState> {
 		onChildSupplyChange={this.onChildSupplyChange.bind(this)}
               />
             </Col>
-            <Col xs={6} className="pt-5 d-flex flex-column h-100">
+            <Col xs={12} md={6} className="d-flex flex-column">
               {this.renderOutput()}
             </Col>
           </Row>

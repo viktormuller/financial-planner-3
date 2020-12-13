@@ -125,7 +125,7 @@ export class ChildCostInput extends Component<
           className="flex-shrink-1"
           style={{ minHeight: "0px" }}
         >
-          <Card.Body className="h-100" style={{ overflowY: "auto" }}>
+          <Card.Body className="h-100">
             <Form>
               {eldestChildYoB + MAX_CHILD_CARE_AGE >= nextYear && (
                 <ChildCareStrategyInput
@@ -170,7 +170,7 @@ export class ChildCostInput extends Component<
     return (
       <Accordion
         defaultActiveKey="yearsOfBirth"
-        className="h-100 d-flex flex-column"
+        className="pb-2 d-flex flex-column"
       >
         {this.renderYearsOfBirthInput("yearsOfBirth")}
         {this.renderChildStartegyInput("childStrategy")}
@@ -203,7 +203,7 @@ export class ChildInput extends Component<ChildProps, { child: Child }> {
     return (
       <FormGroup>
         <Row>
-          <Col xs={9}>
+          <Col xs={8}>
             <Form.Label>
               Child {this.props.index + 1} year of birth
               <Button
@@ -216,7 +216,7 @@ export class ChildInput extends Component<ChildProps, { child: Child }> {
               </Button>
             </Form.Label>
           </Col>
-          <Col xs={3}>
+          <Col xs={4}>
             <Form.Control
               className="text-right"
               name="endYear"
@@ -435,12 +435,12 @@ export class CollegeStrategyInput extends Component<
         </FormGroup>
         <FormGroup>
           <Form.Row>
-            <Col xs={9}>
+            <Col xs={8}>
               <Form.Label>
                 Savings already available for college expenses:
               </Form.Label>
             </Col>
-            <Col xs={3}>
+            <Col xs={4}>
               <NumberFormat
                 thousandSeparator=","
                 prefix="$"

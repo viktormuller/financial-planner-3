@@ -60,8 +60,8 @@ export class ChildCostGraph extends Component<
             <span aria-hidden="true">&times;</span>
           </Button>
         </div>
-        <div className="my-5 flex-shrink-1 h-100" style={{ minHeight: "0px" }}>
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="mt-5 flex-shrink-1 mh-100" style={{ minHeight: "0px" }}>
+          <ResponsiveContainer width="100%" height={300} >
             <BarChart data={monthlyData}>
               <XAxis dataKey="year" />
               <YAxis />
