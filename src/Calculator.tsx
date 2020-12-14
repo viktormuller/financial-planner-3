@@ -1,6 +1,7 @@
 import {
   AfterSchoolCareStrategy,
   AFTER_SCHOOL_CARE_COST,
+  ChildCareStrategy,
   CHILD_CARE_COST,
   CollegeStrategy,
   COLLEGE_COST,
@@ -38,9 +39,13 @@ export class Calculator {
       var endYear = maxYear + MAX_CHILD_SUPPORT_AGE;
       for (let year: number = this.startYear; year <= endYear; year++) {
         var index = year - this.startYear;
+        //Variable to check if the non institutional child care cost that doesn't scale 
+        //with number of children has already been added. Reset for each year.
+        var nonInstitutionalChildCareCostAdded:boolean=false;
         if (!childCost[index]) {
           childCost[index] = new MonetaryAmount();
         }
+        
         for (let child of household.children) {
           //Child supply cost
           if (
@@ -57,9 +62,17 @@ export class Calculator {
             child.yearOfBirth <= year &&
             child.yearOfBirth + MAX_CHILD_CARE_AGE >= year
           ) {
+            if (ChildCareStrategy.DAYCARE === household.childStrategy.childCareStrategy ||
+              ChildCareStrategy.IN_HOME === household.childStrategy.childCareStrategy)
             childCost[index] = childCost[index].add(
               CHILD_CARE_COST[household.childStrategy.childCareStrategy]
             );
+            else if (!nonInstitutionalChildCareCostAdded) {
+              nonInstitutionalChildCareCostAdded =true;
+              childCost[index] = childCost[index].add(
+                CHILD_CARE_COST[household.childStrategy.childCareStrategy]
+              );
+            }
           }
 
           //K12 cost + after school care
