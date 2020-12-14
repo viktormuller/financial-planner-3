@@ -75,7 +75,7 @@ export class ChildCostInput extends Component<
   renderYearsOfBirthInput(eventKey: string) {
     return (
       <Card className="flex-shrink-0">
-        <Accordion.Toggle as={Card.Header} eventKey={eventKey}>
+        <Accordion.Toggle as={Card.Header} eventKey={eventKey} style={{cursor:"pointer"}}>
           How many children do you plan to have?
         </Accordion.Toggle>
         <Accordion.Collapse eventKey={eventKey}>
@@ -116,6 +116,7 @@ export class ChildCostInput extends Component<
           as={Card.Header}
           eventKey={eventKey}
           className="flex-shrink-0"
+          style={{cursor:"pointer"}}
         >
           How would you like to raise them?
         </Accordion.Toggle>
