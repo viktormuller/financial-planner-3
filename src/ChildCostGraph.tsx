@@ -64,7 +64,7 @@ export class ChildCostGraph extends Component<
           <ResponsiveContainer width="100%" height={300} >
             <BarChart data={monthlyData}>
               <XAxis dataKey="year" />
-              <YAxis />
+              <YAxis domain={[0, dataMax=>Math.max(10000, dataMax)]} />
               <Tooltip
                 formatter={value => [
                   d3.format(",.0f")(Number(value)),

@@ -1,5 +1,6 @@
 import { Child } from "./Child";
 import {
+  AfterSchoolCareStrategy,
   ChildCareStrategy,
   ChildStrategy,
   CollegeStrategy,
@@ -12,7 +13,7 @@ export class Household {
   childStrategy: ChildStrategy = {
     childCareStrategy: ChildCareStrategy.DAYCARE,
     k12Strategy: K12Strategy.PRIVATE_REGULAR,
-    afterSchoolCare: false,
+    afterSchoolCare: AfterSchoolCareStrategy.NO,
     annualSupply: new MonetaryAmount(18000),
     collegeStrategy: CollegeStrategy.PRIVATE_TYPICAL,
     collegeSaving: new MonetaryAmount(0)

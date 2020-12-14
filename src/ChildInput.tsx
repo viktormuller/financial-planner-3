@@ -14,14 +14,13 @@ import {
 import { Child } from "./Child";
 import { BsTrash } from "react-icons/bs";
 import {
-  ChildCareStrategy,
+  AFTER_SCHOOL_CARE_TEXT,
   ChildStrategy,
   CHILD_CARE_TEXT,
   CollegeStrategy,
   COLLEGE_TEXT,
-  K12Strategy,
   K12_TEXT,
-  MAX_CHILD_CARE_AGE,
+  MAX_CHILD_CARE_AGE, 
   MAX_CHILD_SUPPORT_AGE,
   MAX_COLLEGE_AGE,
   MAX_K12_AGE,
@@ -128,19 +127,28 @@ export class ChildCostInput extends Component<
           <Card.Body className="h-100">
             <Form>
               {eldestChildYoB + MAX_CHILD_CARE_AGE >= nextYear && (
-                <ChildCareStrategyInput
-                  strategy={this.props.childStrategy.childCareStrategy}
+                <ToggleButtonFormGroup
+                  label="What do you have planned for childcare?"
+                  buttonLabels={CHILD_CARE_TEXT}
+                  name="child_care"
+                  value={this.props.childStrategy.childCareStrategy}
                   onChange={this.props.onChildCareStrategyChange}
                 />
               )}
               {eldestChildYoB + MAX_K12_AGE >= nextYear && (
                 <React.Fragment>
-                  <K12StrategyInput
-                    strategy={this.props.childStrategy.k12Strategy}
+                  <ToggleButtonFormGroup
+                    label="What do you have planned for where your child goes to school?"
+                    buttonLabels={K12_TEXT}
+                    name="k12"
+                    value={this.props.childStrategy.k12Strategy}
                     onChange={this.props.onK12StrategyChange}
                   />
-                  <AfterSchoolCareInput
-                    strategy={this.props.childStrategy.afterSchoolCare}
+                  <ToggleButtonFormGroup
+                    name="after_school_care"
+                    label="Will you be signing up for after-school care for your child?"
+                    buttonLabels={AFTER_SCHOOL_CARE_TEXT}
+                    value={this.props.childStrategy.afterSchoolCare}
                     onChange={this.props.onAfterSchoolCareChange}
                   />
                 </React.Fragment>
@@ -231,84 +239,38 @@ export class ChildInput extends Component<ChildProps, { child: Child }> {
   }
 }
 
-export class ChildCareStrategyInput extends Component<
-  { strategy: ChildCareStrategy; onChange }> {
-
-
-  render() {
-    return (
-      <FormGroup>
-        <Form.Label>What do you have planned for childcare?</Form.Label>
-        <Form.Row className="mx-0">
-          <ToggleButtonGroup
-            className="w-100"
-            name="child_care"
+export function ToggleButtonFormGroup(props: {label:string, buttonLabels:string[], value:number, name: string, onChange}){
+  return (
+  <FormGroup> 
+  <Form.Label>{props.label}</Form.Label>
+  <Form.Row className="mx-0">
+  <ToggleButtonGroup
+            style={{ width: "100%" }}            
             type="radio"
-            value={this.props.strategy}
-            onChange={this.props.onChange}
+            name={props.name}
+            value={props.value}
+            onChange={props.onChange}
           >
-            {Object.keys(ChildCareStrategy).map(strat => {
-              if (!isNaN(Number(strat)))
+            {props.buttonLabels.map((label,index) => {
+              
                 return (
                   <ToggleButton
                     variant="outline-secondary"
                     size="sm"
-                    value={Number(strat)}
-                    key={strat}
+                    value={index}
+                    key={label}
                     style={{
-                      width:
-                        (100 / Object.keys(ChildCareStrategy).length) * 2 + "%"
+                      width: (100 / props.buttonLabels.length) * 2 + "%"
                     }}
                   >
-                    {CHILD_CARE_TEXT[strat]}
+                    {label}
                   </ToggleButton>
                 )
-              else return ("");
+              
             })}
           </ToggleButtonGroup>
-        </Form.Row>
-      </FormGroup>
-    );
-  }
-}
-
-export class K12StrategyInput extends Component<
-  { strategy: K12Strategy; onChange }> {
-
-  render() {
-    return (
-      <FormGroup> 
-        <Form.Label>What do you have planned for where your child goes to school?</Form.Label>
-        <Form.Row className="mx-0">
-          <ToggleButtonGroup
-            style={{ width: "100%" }}
-            name="k12"
-            type="radio"
-            value={this.props.strategy}
-            onChange={this.props.onChange}
-          >
-            {Object.keys(K12Strategy).map(strat => {
-              if (!isNaN(Number(strat)))
-                return (
-                  <ToggleButton
-                    variant="outline-secondary"
-                    size="sm"
-                    value={Number(strat)}
-                    key={strat}
-                    style={{
-                      width: (100 / Object.keys(K12Strategy).length) * 2 + "%"
-                    }}
-                  >
-                    {K12_TEXT[strat]}
-                  </ToggleButton>
-                )
-              else return "";
-            })}
-          </ToggleButtonGroup>
-        </Form.Row>
-      </FormGroup>
-    );
-  }
+          </Form.Row>
+      </FormGroup>);
 }
 
 export class AfterSchoolCareInput extends Component<
@@ -318,6 +280,7 @@ export class AfterSchoolCareInput extends Component<
 
   render() {
     return (
+      
       <FormGroup>
         <Form.Label>Will you be signing up for after-school care for your child?</Form.Label>
         <Form.Row className="mx-0">
@@ -400,37 +363,13 @@ export class CollegeStrategyInput extends Component<
   render() {
     return (
       <React.Fragment>
-        <FormGroup>
-          <Form.Label>Select what type of college you'd like to fund</Form.Label>
-          <Form.Row className="mx-0">
-            <ToggleButtonGroup
-              style={{ width: "100%" }}
-              name="college"
-              type="radio"
-              value={this.props.strategy}
-              onChange={this.props.onCollegeStrategyChange}
-            >
-              {Object.keys(CollegeStrategy).map(strat => {
-                if (!isNaN(Number(strat)))
-                  return (
-                    <ToggleButton
-                      variant="outline-secondary"
-                      size="sm"
-                      value={Number(strat)}
-                      key={strat}
-                      style={{
-                        width:
-                          (100 / Object.keys(CollegeStrategy).length) * 2 + "%"
-                      }}
-                    >
-                      {COLLEGE_TEXT[strat]}
-                    </ToggleButton>
-                  )
-                else return "";
-              })}
-            </ToggleButtonGroup>
-          </Form.Row>
-        </FormGroup>
+        <ToggleButtonFormGroup 
+        label="Select what type of college you'd like to fund"
+        name="college"
+        buttonLabels={COLLEGE_TEXT}
+        value={this.props.strategy}
+        onChange={this.props.onCollegeStrategyChange}
+        />        
         <FormGroup>
           <Form.Row>
             <Col xs={8}>

@@ -1,4 +1,5 @@
 import {
+  AfterSchoolCareStrategy,
   AFTER_SCHOOL_CARE_COST,
   CHILD_CARE_COST,
   CollegeStrategy,
@@ -69,7 +70,7 @@ export class Calculator {
             childCost[index] = childCost[index].add(
               K12_COST[household.childStrategy.k12Strategy]
             );
-            if (household.childStrategy.afterSchoolCare)
+            if (household.childStrategy.afterSchoolCare === AfterSchoolCareStrategy.YES) 
               childCost[index] = childCost[index].add(AFTER_SCHOOL_CARE_COST);
           }
           //College cost

@@ -3,7 +3,7 @@ import { MonetaryAmount } from "./MonetaryAmount";
 export class ChildStrategy {
   childCareStrategy: ChildCareStrategy;
   k12Strategy: K12Strategy;
-  afterSchoolCare: boolean;
+  afterSchoolCare: AfterSchoolCareStrategy;
   annualSupply: MonetaryAmount;
   collegeStrategy: CollegeStrategy;
   collegeSaving: MonetaryAmount;
@@ -49,6 +49,13 @@ export const K12_COST = [
   new MonetaryAmount(12000),
   new MonetaryAmount(30000)
 ];
+
+export enum AfterSchoolCareStrategy {
+  NO, 
+  YES
+}
+
+export const AFTER_SCHOOL_CARE_TEXT = ["No", "Yes"];
 
 export const AFTER_SCHOOL_CARE_COST = new MonetaryAmount(10000);
 
