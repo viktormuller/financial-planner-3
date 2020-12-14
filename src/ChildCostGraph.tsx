@@ -87,10 +87,10 @@ export class ChildCostGraph extends Component<
         {" "}
         {this.props.data.length !== 0 && (
           <div className="text-center mb-3">
-            {"Peak cost is"}
+            {"Your estimated peak monthly cost of raising kids is "}
             <span
               className="text-secondary mx-2"
-              style={{ fontSize: "x-large" }}
+              style={{ fontSize: "x-large", whiteSpace:"nowrap" }}
             >
               {peak.cost.currency +
                 " " +

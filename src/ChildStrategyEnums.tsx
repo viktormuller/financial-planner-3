@@ -19,12 +19,12 @@ export enum ChildCareStrategy {
 }
 
 export const CHILD_CARE_TEXT = [
-  "Family",
+  "Family / You",
   "In-home daycare",
   "Daycare",
   "Au-pair",
   "Nanny",
-  "Nanny in major city"
+  "Nanny in high cost city"
 ];
 
 export const CHILD_CARE_COST = [
@@ -64,11 +64,11 @@ export enum CollegeStrategy {
 }
 
 export const COLLEGE_TEXT = [
-  "In state public",
-  "Out of state public",
-  "Typical private",
-  "Expensive private",
-  "Ivy league"
+  "Public, in-state",
+  "Public, out-of-state",
+  "Private, average",
+  "Private, expensive",
+  "Private, ivy expensive"
 ];
 
 export const COLLEGE_COST = [
@@ -96,6 +96,6 @@ export const MIN_COLLEGE_AGE = 19;
 
 export const ANNUAL_CHILD_SUPPLY = new MonetaryAmount(12000);
 export const MAX_CHILD_SUPPORT_AGE = 22;
-export const MAX_CHILD_CARE_AGE = 5;
-export const MIN_K12_AGE: number = 6;
+export const MAX_CHILD_CARE_AGE = 4;
+export const MIN_K12_AGE: number = 5;
 export const MAX_K12_AGE: number = 18;

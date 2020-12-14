@@ -205,7 +205,7 @@ export class ChildInput extends Component<ChildProps, { child: Child }> {
         <Row>
           <Col xs={8}>
             <Form.Label>
-              Child {this.props.index + 1} year of birth
+              Child {this.props.index + 1} Birth Year
               <Button
                 variant="light"
                 className="py-0 mt-n2"
@@ -238,7 +238,7 @@ export class ChildCareStrategyInput extends Component<
   render() {
     return (
       <FormGroup>
-        <Form.Label>Child care (0-5 years)</Form.Label>
+        <Form.Label>What do you have planned for childcare?</Form.Label>
         <Form.Row className="mx-0">
           <ToggleButtonGroup
             className="w-100"
@@ -278,7 +278,7 @@ export class K12StrategyInput extends Component<
   render() {
     return (
       <FormGroup> 
-        <Form.Label>K-12 education (6-18 years)</Form.Label>
+        <Form.Label>What do you have planned for where your child goes to school?</Form.Label>
         <Form.Row className="mx-0">
           <ToggleButtonGroup
             style={{ width: "100%" }}
@@ -319,7 +319,7 @@ export class AfterSchoolCareInput extends Component<
   render() {
     return (
       <FormGroup>
-        <Form.Label>After school care (6-18 years)</Form.Label>
+        <Form.Label>Will you be signing up for after-school care for your child?</Form.Label>
         <Form.Row className="mx-0">
           <ToggleButtonGroup
             style={{ width: "100%" }}
@@ -368,9 +368,7 @@ export class ChildSupplyInput extends Component<
   render() {
     return (
       <FormGroup>
-        <Form.Label>
-          Monthly supplies (e.g. food, housing, transport, clothing, healthcare,
-          extra-curriculars, summer camp, etc.)
+        <Form.Label>How much are you anticipating spending on monthly supplies (e.g. food, housing, transport, clothing, healthcare, extra-curriculars, summer camp, etc.)
         </Form.Label>
         <div className="mx-4">
           <RangeSlider
@@ -403,7 +401,7 @@ export class CollegeStrategyInput extends Component<
     return (
       <React.Fragment>
         <FormGroup>
-          <Form.Label>College education (19-22 years)</Form.Label>
+          <Form.Label>Select what type of college you'd like to fund</Form.Label>
           <Form.Row className="mx-0">
             <ToggleButtonGroup
               style={{ width: "100%" }}

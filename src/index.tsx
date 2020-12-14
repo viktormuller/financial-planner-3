@@ -35,7 +35,7 @@ class App extends Component<AppProps, AppState> {
     var firstYearCost = this.state.financials.childCost[0];
 
     var textForFirstYear =
-      "Monthly child cost in " + this.calculator.startYear + " is";
+      "Your estimated montly child cost next year is ";
     var textForNoCostFirstYear = "No child cost in first year.";
 
     return (
@@ -43,7 +43,7 @@ class App extends Component<AppProps, AppState> {
         {firstYearCost && firstYearCost.amount > 0 ? (
           <div className="text-center flex-shrink-0">
             {textForFirstYear}
-            <span className="text-primary mx-2" style={{ fontSize: "x-large" }}>
+            <span className="text-primary mx-2" style={{ fontSize: "x-large", whiteSpace:"nowrap" }}>
               {firstYearCost.currency +
                 " " +
                 d3.format(",")(
@@ -135,7 +135,7 @@ class App extends Component<AppProps, AppState> {
     return (
       <React.Fragment>
         <Navbar bg="dark" variant="dark">
-          <Navbar.Brand>How much does it cost to raise a child?</Navbar.Brand>
+          <Navbar.Brand>How much will raising kids cost?</Navbar.Brand>
         </Navbar>
         <Container
           className="my-2"
