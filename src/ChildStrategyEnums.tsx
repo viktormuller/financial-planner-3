@@ -78,13 +78,6 @@ export const COLLEGE_TEXT = [
   "Private, ivy expensive"
 ];
 
-export const COLLEGE_COST = [
-  new MonetaryAmount(6000),
-  new MonetaryAmount(10500),
-  new MonetaryAmount(14000),
-  new MonetaryAmount(16500),
-  new MonetaryAmount(21000)
-];
 //Net of general CPI inflation
 export const COLLEGE_INFLATION = 0.03;
 export const COLLEGE_INYEAR_COST = [

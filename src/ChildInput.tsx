@@ -22,7 +22,7 @@ import {
   CHILD_CARE_COST,
   CHILD_CARE_TEXT,
   CollegeStrategy,
-  COLLEGE_COST,
+  COLLEGE_INYEAR_COST,
   COLLEGE_TEXT,
   K12_COST,
   K12_TEXT,
@@ -40,6 +40,10 @@ import { useMediaQuery } from 'react-responsive';
 
 function annualCostToMonthlyText(amount: MonetaryAmount){
   return amount.currency + " " + d3.format(",.0f")(amount.amount/12) + " / month";
+}
+
+function annualCostToText(amount: MonetaryAmount){
+  return amount.currency + " " + d3.format(",.0f")(amount.amount) + " / year";
 }
 
 export class ChildCostInput extends Component<
@@ -350,8 +354,8 @@ export class CollegeStrategyInput extends Component<
     return (
       <React.Fragment>
         <ToggleButtonFormGroup 
-        label="Select what type of college you'd like to fund"
-        tooltipLabels={COLLEGE_COST.map(annualCostToMonthlyText)}
+        label="Select what type of college you would like to fund"
+        tooltipLabels={COLLEGE_INYEAR_COST.map(annualCostToText)}
         name="college"
         buttonLabels={COLLEGE_TEXT}
         value={this.props.strategy}

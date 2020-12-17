@@ -4,7 +4,6 @@ import {
   ChildCareStrategy,
   CHILD_CARE_COST,
   CollegeStrategy,
-  COLLEGE_COST,
   COLLEGE_INFLATION,
   COLLEGE_INYEAR_COST,
   EXPECTED_RETURN,
@@ -23,12 +22,7 @@ export class Calculator {
   startYear: number = new Date().getFullYear() + 1;
 
   childCost(household: Household) {
-    console.log("childCost calculation invoked");
-    console.log("College strategy: " + household.childStrategy.collegeStrategy);
-    console.log(
-      "College cost / year: " +
-        COLLEGE_COST[household.childStrategy.collegeStrategy].amount
-    );
+    console.log("childCost calculation invoked");    
 
     var childCost: MonetaryAmount[] = [];
     var maxYear = Math.max(
