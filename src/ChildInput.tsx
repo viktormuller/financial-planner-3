@@ -348,8 +348,6 @@ export class CollegeStrategyInput extends Component<
     onCollegeStrategyChange;
     onCollegeSavingChange }
 > {
-
-
   render() {
     return (
       <React.Fragment>

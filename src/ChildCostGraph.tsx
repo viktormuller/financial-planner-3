@@ -64,9 +64,11 @@ export class ChildCostGraph extends Component<
           <ResponsiveContainer width="100%" height={300} >
             <BarChart data={monthlyData}>
               <XAxis dataKey="year" />
-              <YAxis domain={[0, dataMax=>Math.max(10000, dataMax)]} width={85}
+              <YAxis domain={[0, dataMax=>Math.max(10000, dataMax)]} 
+              width={85}
               label={<RCLabel  value='Avg. monthly cost (USD)'  angle="-90" 
-              position= 'left'  style={{textAnchor:"middle"}} offset={-10} />}
+              position= 'left' style={{textAnchor:"middle"}} offset={-10} />}              
+              tickFormatter={d3.format(",.0f")}              
               />
               <Tooltip
                 formatter={value => [
