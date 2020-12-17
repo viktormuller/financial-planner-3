@@ -242,7 +242,7 @@ export class ChildInput extends Component<ChildProps, { child: Child }> {
 }
 
 export function ToggleButtonFormGroup(props: {label:string, buttonLabels:string[], value:number, name: string, onChange}){
-  var vertical:boolean = !useMediaQuery({ query: `(min-width: 768px)` });
+  var vertical:boolean = !useMediaQuery({ query: `(min-width: 992px)` });
   
   return (
   <FormGroup> 
