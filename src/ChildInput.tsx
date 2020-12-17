@@ -30,6 +30,7 @@ import {
 import { MonetaryAmount } from "./MonetaryAmount";
 import RangeSlider from "react-bootstrap-range-slider";
 import NumberFormat from "react-number-format";
+import { useMediaQuery } from 'react-responsive';
 
 export class ChildCostInput extends Component<
   { children: Child[];
@@ -241,13 +242,16 @@ export class ChildInput extends Component<ChildProps, { child: Child }> {
 }
 
 export function ToggleButtonFormGroup(props: {label:string, buttonLabels:string[], value:number, name: string, onChange}){
+  var vertical:boolean = !useMediaQuery({ query: `(min-width: 768px)` });
+  
   return (
   <FormGroup> 
   <Form.Label>{props.label}</Form.Label>
   <Form.Row className="mx-0">
-  <ToggleButtonGroup
-            style={{ width: "100%" }}            
+  <ToggleButtonGroup 
+            style={{ width: "100%"}}            
             type="radio"
+            vertical={vertical}
             name={props.name}
             value={props.value}
             onChange={props.onChange}
@@ -259,10 +263,7 @@ export function ToggleButtonFormGroup(props: {label:string, buttonLabels:string[
                     variant="outline-secondary"
                     size="sm"
                     value={index}
-                    key={label}
-                    style={{
-                      width: (100 / props.buttonLabels.length) * 2 + "%"
-                    }}
+                    key={label}                    
                   >
                     {label}
                   </ToggleButton>
