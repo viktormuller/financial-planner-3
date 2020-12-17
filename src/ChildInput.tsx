@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, FunctionComponent } from "react";
 import * as d3 from "d3-format";
 import {
   Accordion,
@@ -7,18 +7,24 @@ import {
   Col,
   Form,
   FormGroup,
+  OverlayTrigger,
   Row,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
+  Tooltip
 } from "react-bootstrap";
 import { Child } from "./Child";
 import { BsTrash } from "react-icons/bs";
 import {
+  AFTER_SCHOOL_CARE_COST,
   AFTER_SCHOOL_CARE_TEXT,
   ChildStrategy,
+  CHILD_CARE_COST,
   CHILD_CARE_TEXT,
   CollegeStrategy,
+  COLLEGE_COST,
   COLLEGE_TEXT,
+  K12_COST,
   K12_TEXT,
   MAX_CHILD_CARE_AGE, 
   MAX_CHILD_SUPPORT_AGE,
@@ -31,6 +37,10 @@ import { MonetaryAmount } from "./MonetaryAmount";
 import RangeSlider from "react-bootstrap-range-slider";
 import NumberFormat from "react-number-format";
 import { useMediaQuery } from 'react-responsive';
+
+function annualCostToMonthlyText(amount: MonetaryAmount){
+  return amount.currency + " " + d3.format(",.0f")(amount.amount/12) + " / month";
+}
 
 export class ChildCostInput extends Component<
   { children: Child[];
@@ -132,6 +142,7 @@ export class ChildCostInput extends Component<
                 <ToggleButtonFormGroup
                   label="What do you have planned for childcare?"
                   buttonLabels={CHILD_CARE_TEXT}
+                  tooltipLabels={CHILD_CARE_COST.map(annualCostToMonthlyText)}
                   name="child_care"
                   value={this.props.childStrategy.childCareStrategy}
                   onChange={this.props.onChildCareStrategyChange}
@@ -142,6 +153,7 @@ export class ChildCostInput extends Component<
                   <ToggleButtonFormGroup
                     label="What do you have planned for where your child goes to school?"
                     buttonLabels={K12_TEXT}
+                    tooltipLabels={K12_COST.map(annualCostToMonthlyText)}
                     name="k12"
                     value={this.props.childStrategy.k12Strategy}
                     onChange={this.props.onK12StrategyChange}
@@ -149,6 +161,7 @@ export class ChildCostInput extends Component<
                   <ToggleButtonFormGroup
                     name="after_school_care"
                     label="Will you be signing up for after-school care for your child?"
+                    tooltipLabels={[annualCostToMonthlyText(new MonetaryAmount(0)),annualCostToMonthlyText(AFTER_SCHOOL_CARE_COST)]}
                     buttonLabels={AFTER_SCHOOL_CARE_TEXT}
                     value={this.props.childStrategy.afterSchoolCare}
                     onChange={this.props.onAfterSchoolCareChange}
@@ -158,7 +171,8 @@ export class ChildCostInput extends Component<
               {eldestChildYoB + MAX_COLLEGE_AGE >= nextYear && (
                 <CollegeStrategyInput
                   strategy={this.props.childStrategy.collegeStrategy}
-		  collegeSaving={this.props.childStrategy.collegeSaving}
+      collegeSaving={this.props.childStrategy.collegeSaving}
+                  
                   onCollegeStrategyChange={this.props.onCollegeStrategyChange}
 		  onCollegeSavingChange={this.props.onCollegeSavingChange}
                 />
@@ -241,7 +255,17 @@ export class ChildInput extends Component<ChildProps, { child: Child }> {
   }
 }
 
-export function ToggleButtonFormGroup(props: {label:string, buttonLabels:string[], value:number, name: string, onChange}){
+const OverlayToggleButton = ({label, buttonVariant, type, size, value, name, checked, overlay, onChange, ...rest}) => {
+  return (
+    <OverlayTrigger placement="bottom" overlay={overlay} {...rest}>
+      <ToggleButton className="col-12" value={value} variant={buttonVariant} size={size} type={type} name={name} checked={checked} onChange={onChange}>
+        {label}
+      </ToggleButton>
+    </OverlayTrigger>
+  );
+}
+
+export function ToggleButtonFormGroup(props: {label:string, buttonLabels:string[], tooltipLabels?:string[], value:number, name: string, onChange}){
   var vertical:boolean = !useMediaQuery({ query: `(min-width: 992px)` });
   
   return (
@@ -258,15 +282,19 @@ export function ToggleButtonFormGroup(props: {label:string, buttonLabels:string[
           >
             {props.buttonLabels.map((label,index) => {
               
-                return (
-                  <ToggleButton
-                    variant="outline-secondary"
+                return (     
+                  <OverlayToggleButton       
+                    label={label}             
+                    buttonVariant="outline-secondary"
                     size="sm"
                     value={index}
-                    key={label}                    
-                  >
-                    {label}
-                  </ToggleButton>
+                    key={label} 
+                    type="radio"  
+                    name={props.name}
+                    onChange={(e) => props.onChange(e.target.value)}
+                    checked={props.value === index}                    
+                    overlay={props.tooltipLabels && <Tooltip id={props.name + index}>{props.tooltipLabels[index]}</Tooltip>}
+                  />
                 )
               
             })}
@@ -275,50 +303,6 @@ export function ToggleButtonFormGroup(props: {label:string, buttonLabels:string[
       </FormGroup>);
 }
 
-export class AfterSchoolCareInput extends Component<
-  { strategy: boolean; onChange }
-> {
-
-
-  render() {
-    return (
-      
-      <FormGroup>
-        <Form.Label>Will you be signing up for after-school care for your child?</Form.Label>
-        <Form.Row className="mx-0">
-          <ToggleButtonGroup
-            style={{ width: "100%" }}
-            name="k12"
-            type="radio"
-            value={this.props.strategy}
-            onChange={this.props.onChange}
-          >
-            <ToggleButton
-              variant="outline-secondary"
-              size="sm"
-              value={false}
-              style={{
-                width: "50%"
-              }}
-            >
-              No
-            </ToggleButton>
-            <ToggleButton
-              variant="outline-secondary"
-              size="sm"
-              value={true}
-              style={{
-                width: "50%"
-              }}
-            >
-              Yes
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Form.Row>
-      </FormGroup>
-    );
-  }
-}
 
 export class ChildSupplyInput extends Component<
   { annualSupply: MonetaryAmount; onChange }
@@ -367,6 +351,7 @@ export class CollegeStrategyInput extends Component<
       <React.Fragment>
         <ToggleButtonFormGroup 
         label="Select what type of college you'd like to fund"
+        tooltipLabels={COLLEGE_COST.map(annualCostToMonthlyText)}
         name="college"
         buttonLabels={COLLEGE_TEXT}
         value={this.props.strategy}
