@@ -134,15 +134,11 @@ class App extends Component<AppProps, AppState> {
   render() {
     return (
       <React.Fragment>
-        <Navbar bg="dark" variant="dark">
+        <Navbar bg="dark" variant="dark" className="sticky-top">
           <Navbar.Brand>How much will raising kids cost?</Navbar.Brand>
         </Navbar>
         <Container
-          className="my-2"
-          style={{
-            height: "calc(100% - 72px)",
-            maxHeight: "calc(100% - 72px)"
-          }}
+          className="my-2"          
         >
           <Row>
             <Col xs={12} md={6}>
