@@ -11,6 +11,7 @@ import { MonetaryAmount } from "./MonetaryAmount";
 import * as d3 from "d3-format";
 import { ChildCostGraph } from "./ChildCostGraph";
 import ReactJoyride from "react-joyride";
+import { INTRO } from "./Intro";
 
 
 
@@ -140,48 +141,48 @@ class App extends Component<AppProps, AppState> {
     const steps=[{
       content: (
         <React.Fragment>
-          <h3>Welcome to Enough Calculator!</h3>
-          <div className="mt-2">This calculator helps you estimate how much it will cost to raise your kids.</div>
+          <h3>{INTRO[0].title}</h3>
+          <div className="mt-2">{INTRO[0].body}</div>
         </React.Fragment>),
       placement: 'center' as 'center',
       target: 'body'},
       {
       content: 
         <React.Fragment>
-          <h3>Step 1: Tell us about your children</h3>
-          <div>First let us know how many children you have or plan to have and when do you expect them to be born.</div>
+          <h3>{INTRO[1].title}</h3>
+          <div>{INTRO[1].body}</div>
         </React.Fragment>, 
       target: '#num-of-children',
       placement: 'bottom' as 'bottom'}, 
       {
         content: 
           <React.Fragment>
-            <h3>Step 2: Provide more details</h3>
-            <div>You can open these sections to provide more details. We preset typical values for you but do play with the options to understand the trade offs. Hovering over each option will tell you the cost we estimate for it.</div>
+            <h3>{INTRO[2].title}</h3>
+            <div>{INTRO[2].body}</div>
           </React.Fragment>, 
         target: '#child-strat',
         placement: 'top' as 'top'}, 
       {
        content: 
           <React.Fragment>
-            <h3>Step 3: Review your results</h3>
-            <div>You can always see next year's average monthly cost here. Cost of raising children can vary throughout the years. You can also find the highest monthly cost you can expect.</div>
+            <h3>{INTRO[3].title}</h3>
+            <div>{INTRO[3].body}</div>
           </React.Fragment>, 
         target: '#child-output',
         placement: 'top' as 'top'},
       {
         content: 
            <React.Fragment>
-             <h3>Step 4: Deep dive on details</h3>
-             <div>Just click on this button to see how the monthly cost changes over time.</div>
+             <h3>{INTRO[4].title}</h3>
+             <div>{INTRO[4].body}</div>
            </React.Fragment>, 
          target: '#child-cost-graph',
          placement: 'top' as 'top'}, 
       {
        content: (
         <React.Fragment>
-          <h3>Let's get started</h3>
-          <div className="mt-2">That's it. Play around with different choices and do not worry if you cannot find your exact preference, choose an option whose cost is closest to your estimate. At the end of the day "plans are worthless, but planning is everything".</div>
+          <h3>{INTRO[5].title}</h3>
+          <div className="mt-2">{INTRO[5].body}</div>
         </React.Fragment>),
         placement: 'center' as 'center',
         target: 'body',
