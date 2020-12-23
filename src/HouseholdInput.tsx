@@ -21,6 +21,7 @@ export class HouseholdInput extends Component<
   }
 
   render() {
+    
     return (
       <ChildCostInput
         children={this.state.children}

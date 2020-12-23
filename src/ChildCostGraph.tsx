@@ -66,7 +66,7 @@ export class ChildCostGraph extends Component<
               <XAxis dataKey="year" />
               <YAxis domain={[0, dataMax=>Math.max(10000, dataMax)]} 
               width={85}
-              label={<RCLabel  value='Avg. monthly cost (USD)'  angle="-90" 
+              label={<RCLabel  value='Avg. monthly cost (USD)'  angle={-90} 
               position= 'left' style={{textAnchor:"middle"}} offset={-10} />}              
               tickFormatter={d3.format(",.0f")}              
               />
@@ -104,7 +104,7 @@ export class ChildCostGraph extends Component<
             {"in year " + peak.year}
           </div>
         )}
-        <Button
+        <Button id="child-cost-graph"
           size="sm"
           variant="outline-secondary"
           onClick={() => {
