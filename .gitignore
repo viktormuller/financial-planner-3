@@ -8,8 +8,12 @@
 # testing
 /coverage
 
+# deploy scripts
+publish.bat
+
 # production
 /build
+/public/.htaccess
 
 # misc
 .DS_Store
