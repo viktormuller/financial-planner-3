@@ -10,11 +10,16 @@ import { Calculator } from "./Calculator";
 import { MonetaryAmount } from "./MonetaryAmount";
 import * as d3 from "d3-format";
 import { ChildCostGraph } from "./ChildCostGraph";
+import ReactJoyride from "react-joyride";
+
+
+
 
 interface AppProps {}
 interface AppState {
   household: Household;
   financials: { childCost: MonetaryAmount[] };
+  childInputActiveKey?;
 }
 
 class App extends Component<AppProps, AppState> {
@@ -27,7 +32,7 @@ class App extends Component<AppProps, AppState> {
     household.children.push(new Child(2020));
     this.state = {
       household: household,
-      financials: { childCost: this.calculator.childCost(household) }
+      financials: { childCost: this.calculator.childCost(household) }      
     };
   }
 
@@ -39,7 +44,7 @@ class App extends Component<AppProps, AppState> {
     var textForNoCostFirstYear = "No child cost in first year.";
 
     return (
-      <div className="py-5 md-sticky">
+      <div className="py-5 md-sticky" id="child-output">
         {firstYearCost && firstYearCost.amount > 0 ? (
           <div className="text-center flex-shrink-0">
             {textForFirstYear}
@@ -56,7 +61,7 @@ class App extends Component<AppProps, AppState> {
             {textForNoCostFirstYear}
           </div>
         )}
-        <ChildCostGraph
+        <ChildCostGraph 
           data={this.state.financials.childCost}
           startYear={this.calculator.startYear}
         />
@@ -132,18 +137,73 @@ class App extends Component<AppProps, AppState> {
   }
 
   render() {
+    const steps=[{
+      content: (
+        <React.Fragment>
+          <h3>Welcome to Enough Calculator!</h3>
+          <div className="mt-2">This calculator helps you estimate how much it will cost to raise your kids.</div>
+        </React.Fragment>),
+      placement: 'center' as 'center',
+      target: 'body'},
+      {
+      content: 
+        <React.Fragment>
+          <h3>Step 1: Tell us about your children</h3>
+          <div>First let us know how many children you have or plan to have and when do you expect them to be born.</div>
+        </React.Fragment>, 
+      target: '#num-of-children',
+      placement: 'bottom' as 'bottom'}, 
+      {
+        content: 
+          <React.Fragment>
+            <h3>Step 2: Provide more details</h3>
+            <div>You can open these sections to provide more details. We preset typical values for you but do play with the options to understand the trade offs. Hovering over each option will tell you the cost we estimate for it.</div>
+          </React.Fragment>, 
+        target: '#child-strat',
+        placement: 'top' as 'top'}, 
+      {
+       content: 
+          <React.Fragment>
+            <h3>Step 3: Review your results</h3>
+            <div>You can always see next year's average monthly cost here. Cost of raising children can vary throughout the years. You can also find the highest monthly cost you can expect.</div>
+          </React.Fragment>, 
+        target: '#child-output',
+        placement: 'top' as 'top'},
+      {
+        content: 
+           <React.Fragment>
+             <h3>Step 4: Deep dive on details</h3>
+             <div>Just click on this button to see how the monthly cost changes over time.</div>
+           </React.Fragment>, 
+         target: '#child-cost-graph',
+         placement: 'top' as 'top'}, 
+      {
+       content: (
+        <React.Fragment>
+          <h3>Let's get started</h3>
+          <div className="mt-2">That's it. Play around with different choices and do not worry if you cannot find your exact preference, choose an option whose cost is closest to your estimate. At the end of the day "plans are worthless, but planning is everything".</div>
+        </React.Fragment>),
+        placement: 'center' as 'center',
+        target: 'body',
+        locale: { last:"Get started"}
+      }                      
+    ];
+    
     return (
       <React.Fragment>
+        <ReactJoyride 
+          steps={steps} 
+          continuous={true} 
+          showSkipButton={true} 
+          /> 
         <Navbar bg="dark" variant="dark" className="sticky-top">
           <Navbar.Brand>How much will raising kids cost?</Navbar.Brand>
-        </Navbar>
-        <Container
-          className="my-2"          
-        >
-          <Row>
+        </Navbar>               
+        <Container className="my-2" id="main-container" >          
+          <Row>         
             <Col xs={12} md={6}>
               <HouseholdInput
-                household={this.state.household}
+                household={this.state.household}                
                 onChange={this.onChange.bind(this)}
 		onChildCareStrategyChange={this.onChildCareStrategyChange.bind(this)}
 		onK12StrategyChange={this.onK12StrategyChange.bind(this)}
@@ -156,8 +216,9 @@ class App extends Component<AppProps, AppState> {
             <Col xs={12} md={6} className="d-flex flex-column">
               {this.renderOutput()}
             </Col>
+            
           </Row>
-        </Container>
+        </Container>        
       </React.Fragment>
     );
   }

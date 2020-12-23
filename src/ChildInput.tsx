@@ -1,4 +1,4 @@
-import React, { Component, FunctionComponent } from "react";
+import React, { Component } from "react";
 import * as d3 from "d3-format";
 import {
   Accordion,
@@ -49,6 +49,7 @@ function annualCostToText(amount: MonetaryAmount){
 export class ChildCostInput extends Component<
   { children: Child[];
     childStrategy: ChildStrategy;
+    activeKey?;
     onChange;
     onChildCareStrategyChange;
     onK12StrategyChange;
@@ -56,12 +57,12 @@ export class ChildCostInput extends Component<
     onCollegeStrategyChange;
     onCollegeSavingChange;
     onChildSupplyChange },
-  { children: Child[];  }
+  { children: Child[]}
 > {
   constructor(props) {
     super(props);
     this.state = {
-      children: props.children    };
+      children: props.children}    
   }
 
   addChild(event) {
@@ -89,7 +90,7 @@ export class ChildCostInput extends Component<
 
   renderYearsOfBirthInput(eventKey: string) {
     return (
-      <Card className="flex-shrink-0">
+      <Card className="flex-shrink-0" id="num-of-children">
         <Accordion.Toggle as={Card.Header} eventKey={eventKey} style={{cursor:"pointer"}}>
           How many children do you plan to have?
         </Accordion.Toggle>
@@ -126,7 +127,7 @@ export class ChildCostInput extends Component<
     var nextYear = new Date().getFullYear() + 1;
 
     return (
-      <Card className="flex-shrink-1">
+      <Card className="flex-shrink-1" id="child-strat">
         <Accordion.Toggle
           as={Card.Header}
           eventKey={eventKey}
@@ -194,10 +195,12 @@ export class ChildCostInput extends Component<
     );
   }
 
-  render() {
+
+  render() {    
+
     return (
-      <Accordion
-        defaultActiveKey="yearsOfBirth"
+      <Accordion        
+        defaultActiveKey="yearsOfBirth"        
         className="pb-2 d-flex flex-column"
       >
         {this.renderYearsOfBirthInput("yearsOfBirth")}
