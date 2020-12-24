@@ -45,7 +45,7 @@ class App extends Component<AppProps, AppState> {
     var textForNoCostFirstYear = "No child cost in first year.";
 
     return (
-      <div className="py-5 md-sticky" id="child-output">
+      <div className="py-5 md-sticky bg-white" id="child-output">
         {firstYearCost && firstYearCost.amount > 0 ? (
           <div className="text-center flex-shrink-0">
             {textForFirstYear}
@@ -169,10 +169,7 @@ class App extends Component<AppProps, AppState> {
             <div>{INTRO[3].body}</div>
           </React.Fragment>, 
         target: '#child-output',
-        placement: 'top' as 'top', 
-        floaterProps: {
-          disableAnimation: true,
-        }},
+        placement: 'top' as 'top'},        
       {
         content: 
            <React.Fragment>
@@ -198,7 +195,8 @@ class App extends Component<AppProps, AppState> {
         <ReactJoyride 
           steps={steps} 
           continuous={true} 
-          showSkipButton={true} 
+          showSkipButton={true}
+          spotlightPadding={0}                   
           /> 
         <Navbar bg="dark" variant="dark" className="sticky-top">
           <Navbar.Brand>How much will raising kids cost?</Navbar.Brand>
