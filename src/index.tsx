@@ -169,7 +169,10 @@ class App extends Component<AppProps, AppState> {
             <div>{INTRO[3].body}</div>
           </React.Fragment>, 
         target: '#child-output',
-        placement: 'top' as 'top'},
+        placement: 'top' as 'top', 
+        floaterProps: {
+          disableAnimation: true,
+        }},
       {
         content: 
            <React.Fragment>
