@@ -15,7 +15,6 @@ export class Household {
     k12Strategy: K12Strategy.PRIVATE_REGULAR,
     afterSchoolCare: AfterSchoolCareStrategy.NO,
     annualSupply: new MonetaryAmount(18000),
-    collegeStrategy: CollegeStrategy.PRIVATE_TYPICAL,
-    collegeSaving: new MonetaryAmount(0)
+    collegeStrategy: CollegeStrategy.PRIVATE_TYPICAL
   };
 }
