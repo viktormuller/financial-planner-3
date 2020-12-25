@@ -55,7 +55,6 @@ export class ChildCostInput extends Component<
     onK12StrategyChange;
     onAfterSchoolCareChange;
     onCollegeStrategyChange;
-    onCollegeSavingChange;
     onChildSupplyChange },
   { children: Child[]}
 > {
@@ -174,13 +173,14 @@ export class ChildCostInput extends Component<
                 </React.Fragment>
               )}
               {eldestChildYoB + MAX_COLLEGE_AGE >= nextYear && (
-                <CollegeStrategyInput
-                  strategy={this.props.childStrategy.collegeStrategy}
-      collegeSaving={this.props.childStrategy.collegeSaving}
-                  
-                  onCollegeStrategyChange={this.props.onCollegeStrategyChange}
-		  onCollegeSavingChange={this.props.onCollegeSavingChange}
-                />
+                <ToggleButtonFormGroup 
+                label="Select what type of college you would like to fund"
+                tooltipLabels={COLLEGE_INYEAR_COST.map(annualCostToText)}
+                name="college"
+                buttonLabels={COLLEGE_TEXT}
+                value={this.props.childStrategy.collegeStrategy}
+                onChange={this.props.onCollegeStrategyChange}
+                /> 
               )}
               {eldestChildYoB + MAX_CHILD_SUPPORT_AGE >= nextYear && (
                 <ChildSupplyInput
@@ -341,47 +341,6 @@ export class ChildSupplyInput extends Component<
           />
         </div>
       </FormGroup>
-    );
-  }
-}
-
-export class CollegeStrategyInput extends Component<
-  { strategy: CollegeStrategy;
-    collegeSaving:MonetaryAmount; 
-    onCollegeStrategyChange;
-    onCollegeSavingChange }
-> {
-  render() {
-    return (
-      <React.Fragment>
-        <ToggleButtonFormGroup 
-        label="Select what type of college you would like to fund"
-        tooltipLabels={COLLEGE_INYEAR_COST.map(annualCostToText)}
-        name="college"
-        buttonLabels={COLLEGE_TEXT}
-        value={this.props.strategy}
-        onChange={this.props.onCollegeStrategyChange}
-        />        
-        <FormGroup>
-          <Form.Row>
-            <Col xs={8}>
-              <Form.Label>
-                Savings already available for college expenses:
-              </Form.Label>
-            </Col>
-            <Col xs={4}>
-              <NumberFormat
-                thousandSeparator=","
-                prefix="$"
-                className="text-right"
-                value={this.props.collegeSaving.amount}
-                customInput={Form.Control}
-                onValueChange={this.props.onCollegeSavingChange}
-              />
-            </Col>
-          </Form.Row>
-        </FormGroup>
-      </React.Fragment>
     );
   }
 }

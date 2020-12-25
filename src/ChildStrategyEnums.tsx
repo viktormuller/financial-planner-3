@@ -5,8 +5,7 @@ export class ChildStrategy {
   k12Strategy: K12Strategy;
   afterSchoolCare: AfterSchoolCareStrategy;
   annualSupply: MonetaryAmount;
-  collegeStrategy: CollegeStrategy;
-  collegeSaving: MonetaryAmount;
+  collegeStrategy: CollegeStrategy;  
 }
 
 export enum ChildCareStrategy {

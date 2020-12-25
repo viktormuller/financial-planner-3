@@ -98,13 +98,6 @@ class App extends Component<AppProps, AppState> {
     this.resetRecalcTimer();
   }
 
-  onCollegeSavingChange(value){
-    var newHH = this.state.household;
-    newHH.childStrategy.collegeSaving = new MonetaryAmount(value.floatValue);
-    this.setState({household:newHH});
-    this.resetRecalcTimer();
-  }
-
   onChildSupplyChange(value){
     var newHH = this.state.household;
     newHH.childStrategy.annualSupply = value;
@@ -211,7 +204,6 @@ class App extends Component<AppProps, AppState> {
 		onK12StrategyChange={this.onK12StrategyChange.bind(this)}
 		onAfterSchoolCareChange={this.onAfterSchoolCareChange.bind(this)}
 		onCollegeStrategyChange={this.onCollegeStrategyChange.bind(this)}
-		onCollegeSavingChange={this.onCollegeSavingChange.bind(this)}
 		onChildSupplyChange={this.onChildSupplyChange.bind(this)}
               />
             </Col>

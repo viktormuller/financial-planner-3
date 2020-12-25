@@ -10,8 +10,7 @@ export class HouseholdInput extends Component<
     onChildCareStrategyChange;
     onK12StrategyChange;
     onAfterSchoolCareChange;
-    onCollegeStrategyChange;
-    onCollegeSavingChange;
+    onCollegeStrategyChange;    
     onChildSupplyChange; },
   Household
 > {
@@ -30,8 +29,7 @@ export class HouseholdInput extends Component<
         onK12StrategyChange={this.props.onK12StrategyChange}
         onAfterSchoolCareChange={this.props.onAfterSchoolCareChange}
         onCollegeStrategyChange={this.props.onCollegeStrategyChange}
-	onCollegeSavingChange={this.props.onCollegeSavingChange}
-	onChildSupplyChange={this.props.onChildSupplyChange}
+	      onChildSupplyChange={this.props.onChildSupplyChange}
         onChange={this.props.onChange}
       />
     );

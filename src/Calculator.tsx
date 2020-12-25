@@ -90,8 +90,7 @@ export class Calculator {
                 child.yearOfBirth +
                   MAX_COLLEGE_AGE -
                   Math.max(this.startYear, child.yearOfBirth),
-                household.childStrategy.collegeStrategy,
-                household.childStrategy.collegeSaving
+                household.childStrategy.collegeStrategy                
               )
             );
           }
@@ -104,8 +103,7 @@ export class Calculator {
   // Assumes all rates net of general CPI inflation
   collegeSavingRateCalculator(
     yearsForSaving: number,
-    strat: CollegeStrategy,
-    savings: MonetaryAmount
+    strat: CollegeStrategy
   ) {
     var yearsOfCollege = MAX_COLLEGE_AGE - MIN_COLLEGE_AGE + 1;
     var firstYearCostInflator = Math.pow(
@@ -113,40 +111,17 @@ export class Calculator {
       yearsForSaving - yearsOfCollege + 1
     );
 
-    /* console.log(
-      "Years till first year: " + (yearsForSaving - yearsOfCollege + 1)
-    );*/
-
-    // console.log("First year cost inflator: " + firstYearCostInflator);
-
     var firstYearCostOfCollege = COLLEGE_INYEAR_COST[strat].multiply(
       firstYearCostInflator
     );
 
-    // console.log("First year college cost: " + firstYearCostOfCollege.amount);
     var totalCostOfCollege = firstYearCostOfCollege.multiply(
       (1 - Math.pow(COLLEGE_INFLATION + 1, yearsOfCollege)) / -COLLEGE_INFLATION
     );
-    console.log("Total college cost: " + totalCostOfCollege.amount);
 
-    var valueOfSavingAlreadyAvailable = savings.multiply(
-      Math.pow(1 + EXPECTED_RETURN, yearsForSaving)
-    );
-
-    console.log(
-      "Value of available savings: " + valueOfSavingAlreadyAvailable.amount
-    );
-
-    var remainingCostOfCollege = totalCostOfCollege.subtract(
-      valueOfSavingAlreadyAvailable
-    );
-
-    console.log("Remaining cost of college: " + remainingCostOfCollege.amount);
-
-    var collegeSavingRate = remainingCostOfCollege.multiply(
+    var collegeSavingRate = totalCostOfCollege.multiply(
       -EXPECTED_RETURN / (1 - Math.pow(1 + EXPECTED_RETURN, yearsForSaving))
     );
-    //  console.log("College saving rate: " + collegeSavingRate.amount);
 
     return collegeSavingRate;
   }
