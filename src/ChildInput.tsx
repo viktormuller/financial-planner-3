@@ -7,12 +7,7 @@ import {
   Col,
   Form,
   FormGroup,
-  OverlayTrigger,
-  Row,
-  ToggleButton,
-  ToggleButtonGroup,
-  Tooltip
-} from "react-bootstrap";
+  Row} from "react-bootstrap";
 import { Child } from "./Child";
 import { BsTrash } from "react-icons/bs";
 import {
@@ -20,8 +15,7 @@ import {
   AFTER_SCHOOL_CARE_TEXT,
   ChildStrategy,
   CHILD_CARE_COST,
-  CHILD_CARE_TEXT,
-  CollegeStrategy,
+  CHILD_CARE_TEXT,  
   COLLEGE_INYEAR_COST,
   COLLEGE_TEXT,
   K12_COST,
@@ -35,8 +29,8 @@ import {
 } from "./ChildStrategyEnums";
 import { MonetaryAmount } from "./MonetaryAmount";
 import RangeSlider from "react-bootstrap-range-slider";
-import NumberFormat from "react-number-format";
-import { useMediaQuery } from 'react-responsive';
+import { ToggleButtonFormGroup } from "./ToggleButtonFormGroup";
+import { InfoIcon } from "./InfoIcon";
 
 function annualCostToMonthlyText(amount: MonetaryAmount){
   return amount.currency + " " + d3.format(",.0f")(amount.amount/12) + " / month";
@@ -144,7 +138,7 @@ export class ChildCostInput extends Component<
             <Form>
               {eldestChildYoB + MAX_CHILD_CARE_AGE >= nextYear && (
                 <ToggleButtonFormGroup
-                  label="What do you have planned for childcare?"
+                  label="What do you have planned for childcare?"                  
                   buttonLabels={CHILD_CARE_TEXT}
                   tooltipLabels={CHILD_CARE_COST.map(annualCostToMonthlyText)}
                   name="child_care"
@@ -174,7 +168,8 @@ export class ChildCostInput extends Component<
               )}
               {eldestChildYoB + MAX_COLLEGE_AGE >= nextYear && (
                 <ToggleButtonFormGroup 
-                label="Select what type of college you would like to fund"
+                label="Select what type of college you would like to fund!"
+                labelTooltip="We will spread the cost evely to all the years remaining untill college. We are assuming a 5% inflation of college cost and a 6% return on investment."
                 tooltipLabels={COLLEGE_INYEAR_COST.map(annualCostToText)}
                 name="college"
                 buttonLabels={COLLEGE_TEXT}
@@ -262,55 +257,6 @@ export class ChildInput extends Component<ChildProps, { child: Child }> {
   }
 }
 
-const OverlayToggleButton = ({label, buttonVariant, type, size, value, name, checked, overlay, onChange, ...rest}) => {
-  return (
-    <OverlayTrigger placement="bottom" overlay={overlay} {...rest}>
-      <ToggleButton className="col-12" value={value} variant={buttonVariant} size={size} type={type} name={name} checked={checked} onChange={onChange}>
-        {label}
-      </ToggleButton>
-    </OverlayTrigger>
-  );
-}
-
-export function ToggleButtonFormGroup(props: {label:string, buttonLabels:string[], tooltipLabels?:string[], value:number, name: string, onChange}){
-  var vertical:boolean = !useMediaQuery({ query: `(min-width: 992px)` });
-  
-  return (
-  <FormGroup> 
-  <Form.Label>{props.label}</Form.Label>
-  <Form.Row className="mx-0">
-  <ToggleButtonGroup 
-            style={{ width: "100%"}}            
-            type="radio"
-            vertical={vertical}
-            name={props.name}
-            value={props.value}
-            onChange={props.onChange}
-          >
-            {props.buttonLabels.map((label,index) => {
-              
-                return (     
-                  <OverlayToggleButton       
-                    label={label}             
-                    buttonVariant="outline-secondary"
-                    size="sm"
-                    value={index}
-                    key={label} 
-                    type="radio"  
-                    name={props.name}
-                    onChange={(e) => props.onChange(e.target.value)}
-                    checked={props.value === index}                    
-                    overlay={props.tooltipLabels && <Tooltip id={props.name + index}>{props.tooltipLabels[index]}</Tooltip>}
-                  />
-                )
-              
-            })}
-          </ToggleButtonGroup>
-          </Form.Row>
-      </FormGroup>);
-}
-
-
 export class ChildSupplyInput extends Component<
   { annualSupply: MonetaryAmount; onChange }
 > {
@@ -324,7 +270,7 @@ export class ChildSupplyInput extends Component<
   render() {
     return (
       <FormGroup>
-        <Form.Label>How much are you anticipating spending on monthly supplies (e.g. food, housing, transport, clothing, healthcare, extra-curriculars, summer camp, etc.)
+        <Form.Label>How much are you anticipating spending on monthly supplies? <InfoIcon tooltip="Include all your other expenses. Typically this is between $1,000 and $2,000 per month in the USA. Key items to think about are e.g. food, housing, transport, clothing, healthcare, extra-curriculars, summer camp, etc."/>
         </Form.Label>
         <div className="mx-4">
           <RangeSlider
