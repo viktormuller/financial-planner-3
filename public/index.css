@@ -13,6 +13,9 @@ code {
     monospace;
 }
 
+.shy-link > a {
+  color: gray
+}
 
 
 @media (min-width: 768px) {
