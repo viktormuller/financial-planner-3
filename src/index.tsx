@@ -7,20 +7,15 @@ import { Household } from "./Household";
 import { Child } from "./Child";
 import { HouseholdInput } from "./HouseholdInput";
 import { Calculator } from "./Calculator";
-import { MonetaryAmount } from "./MonetaryAmount";
 import * as d3 from "d3-format";
 import { ChildCostGraph } from "./ChildCostGraph";
 import ReactJoyride from "react-joyride";
 import { INTRO } from "./Intro";
-
-
-
+import { CHILD_COST_ACCOUNT_TYPE } from "./HouseholdCoA";
 
 interface AppProps {}
 interface AppState {
-  household: Household;
-  financials: { childCost: MonetaryAmount[] };
-  childInputActiveKey?;
+  household: Household;   
 }
 
 class App extends Component<AppProps, AppState> {
@@ -32,17 +27,19 @@ class App extends Component<AppProps, AppState> {
     var household = new Household();
     household.children.push(new Child(2020));
     this.state = {
-      household: household,
-      financials: { childCost: this.calculator.childCost(household) }      
+      household: household      
     };
+    this.calculator.childCost(household);
   }
 
   renderOutput() {
-    var firstYearCost = this.state.financials.childCost[0];
-
     var textForFirstYear =
       "Your estimated montly child cost next year is ";
     var textForNoCostFirstYear = "No child cost in first year.";
+
+    var childCost = this.state.household.cashFlowStatement.getAccountByType(CHILD_COST_ACCOUNT_TYPE);    
+
+    var firstYearCost = childCost?.balances[0];    
 
     return (
       <div className="py-5 md-sticky bg-white" id="child-output">
@@ -62,8 +59,9 @@ class App extends Component<AppProps, AppState> {
             {textForNoCostFirstYear}
           </div>
         )}
-        <ChildCostGraph 
-          data={this.state.financials.childCost}
+        <ChildCostGraph           
+          totalCostByYear={childCost}
+          costByType={this.state.household.cashFlowStatement.getChildAccounts(CHILD_COST_ACCOUNT_TYPE)}
           startYear={this.calculator.startYear}
         />
       </div>
@@ -109,10 +107,9 @@ class App extends Component<AppProps, AppState> {
     if (this.recalcTimeout) window.clearTimeout(this.recalcTimeout);
 
     this.recalcTimeout = window.setTimeout(() => {
+      this.calculator.childCost(this.state.household)
       this.setState({
-        financials: {
-          childCost: this.calculator.childCost(this.state.household)
-        }
+        household: this.state.household
       });
     }, 300);
   }
@@ -122,15 +119,17 @@ class App extends Component<AppProps, AppState> {
 
     this.setState({ household: this.state.household });
     this.recalcTimeout = window.setTimeout(() => {
+      this.calculator.childCost(this.state.household)
       this.setState({
-        financials: {
-          childCost: this.calculator.childCost(this.state.household)
-        }
+        household: this.state.household
       });
     }, 300);
   }
 
   render() {
+    console.log("App.render invoked");
+    console.log("household child cost: ")
+    console.log(this.state.household.cashFlowStatement.getAccountByType(CHILD_COST_ACCOUNT_TYPE)?.balances);
     const steps=[{
       content: (
         <React.Fragment>

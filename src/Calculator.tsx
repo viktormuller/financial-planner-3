@@ -16,39 +16,37 @@ import {
   MIN_K12_AGE
 } from "./ChildStrategyEnums";
 import { Household } from "./Household";
+import { AFTER_SCHOOL_CARE_COST_ACCOUNT_TYPE, CHILD_CARE_COST_ACCOUNT_TYPE, CHILD_COST_ACCOUNT_TYPE, CHILD_SUPPLY_ACCOUNT_TYPE, COLLEGE_COST_ACCOUNT_TYPE, K12_COST_ACCOUNT_TYPE } from "./HouseholdCoA";
 import { MonetaryAmount } from "./MonetaryAmount";
 
 export class Calculator {
   startYear: number = new Date().getFullYear() + 1;
 
-  childCost(household: Household) {
-    console.log("childCost calculation invoked");    
+  childCost(household: Household) {      
+    console.log("Child cost calc invoked");
+    household.cashFlowStatement.resetAccountByType(CHILD_COST_ACCOUNT_TYPE);
 
-    var childCost: MonetaryAmount[] = [];
     var maxYear = Math.max(
       ...household.children.map(child => child.yearOfBirth)
     );
     //If there are any kids then calculate, otherwise return empty array.
     if (maxYear) {
       var endYear = maxYear + MAX_CHILD_SUPPORT_AGE;
-      for (let year: number = this.startYear; year <= endYear; year++) {
-        var index = year - this.startYear;
+      for (let year: number = this.startYear; year <= endYear; year++) {        
         //Variable to check if the non institutional child care cost that doesn't scale 
         //with number of children has already been added. Reset for each year.
         var nonInstitutionalChildCareCostAdded:boolean=false;
-        if (!childCost[index]) {
-          childCost[index] = new MonetaryAmount();
-        }
-        
+              
         for (let child of household.children) {
           //Child supply cost
           if (
             child.yearOfBirth <= year &&
             child.yearOfBirth + MAX_CHILD_SUPPORT_AGE >= year
-          ) {
-            childCost[index] = childCost[index].add(
-              household.childStrategy.annualSupply
-            );
+          ) {            
+            household.cashFlowStatement.addToAccount(
+              CHILD_SUPPLY_ACCOUNT_TYPE.id, 
+              year,
+              household.childStrategy.annualSupply);
           }
 
           //ChildCare cost
@@ -58,15 +56,17 @@ export class Calculator {
           ) {
             if (ChildCareStrategy.DAYCARE === household.childStrategy.childCareStrategy ||
               ChildCareStrategy.IN_HOME === household.childStrategy.childCareStrategy)
-            childCost[index] = childCost[index].add(
-              CHILD_CARE_COST[household.childStrategy.childCareStrategy]
-            );
+              household.cashFlowStatement.addToAccount(
+                CHILD_CARE_COST_ACCOUNT_TYPE.id, 
+                year,
+                CHILD_CARE_COST[household.childStrategy.childCareStrategy]);          
             else if (!nonInstitutionalChildCareCostAdded) {
               nonInstitutionalChildCareCostAdded =true;
-              childCost[index] = childCost[index].add(
-                CHILD_CARE_COST[household.childStrategy.childCareStrategy]
-              );
-            }
+              household.cashFlowStatement.addToAccount(
+                CHILD_CARE_COST_ACCOUNT_TYPE.id, 
+                year,
+                CHILD_CARE_COST[household.childStrategy.childCareStrategy]);                        
+            }//else non institutional child care strategy and it has already been accounted for.
           }
 
           //K12 cost + after school care
@@ -74,31 +74,43 @@ export class Calculator {
             child.yearOfBirth + MIN_K12_AGE <= year &&
             child.yearOfBirth + MAX_K12_AGE >= year
           ) {
-            childCost[index] = childCost[index].add(
-              K12_COST[household.childStrategy.k12Strategy]
-            );
+            household.cashFlowStatement.addToAccount(
+              K12_COST_ACCOUNT_TYPE.id, 
+              year,
+              K12_COST[household.childStrategy.k12Strategy]);   
             if (household.childStrategy.afterSchoolCare === AfterSchoolCareStrategy.YES) 
-              childCost[index] = childCost[index].add(AFTER_SCHOOL_CARE_COST);
+              household.cashFlowStatement.addToAccount(
+                AFTER_SCHOOL_CARE_COST_ACCOUNT_TYPE.id, 
+                year,
+                AFTER_SCHOOL_CARE_COST);           
           }
           //College cost
           if (
             child.yearOfBirth <= year &&
             child.yearOfBirth + MAX_COLLEGE_AGE >= year
           ) {
-            childCost[index] = childCost[index].add(
+            household.cashFlowStatement.addToAccount(
+              COLLEGE_COST_ACCOUNT_TYPE.id, 
+              year,
               this.collegeSavingRateCalculator(
                 child.yearOfBirth +
                   MAX_COLLEGE_AGE -
                   Math.max(this.startYear, child.yearOfBirth),
                 household.childStrategy.collegeStrategy                
-              )
-            );
+              ));         
+          }
+        }
+        //Failsafe to back fill empty values in the beginning. 
+        var totalAccount = household.cashFlowStatement.getAccountByType(CHILD_COST_ACCOUNT_TYPE);
+        if (totalAccount !== undefined){
+          var yearTotalCost = totalAccount.balances[year-this.startYear];
+          if (yearTotalCost === null || yearTotalCost === undefined) {            
+            totalAccount.balances[year-this.startYear] = new MonetaryAmount(0);
           }
         }
       }
     }
-    return childCost;
-  }
+   }
 
   // Assumes all rates net of general CPI inflation
   collegeSavingRateCalculator(
