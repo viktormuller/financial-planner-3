@@ -13,7 +13,8 @@ import {
   MAX_COLLEGE_AGE,
   MAX_K12_AGE,
   MIN_COLLEGE_AGE,
-  MIN_K12_AGE
+  MIN_K12_AGE,
+  MULTI_KID_CHILD_CARE_STRATEGIES
 } from "./ChildStrategyEnums";
 import { Household } from "./Household";
 import { AFTER_SCHOOL_CARE_COST_ACCOUNT_TYPE, CHILD_CARE_COST_ACCOUNT_TYPE, CHILD_COST_ACCOUNT_TYPE, CHILD_SUPPLY_ACCOUNT_TYPE, COLLEGE_COST_ACCOUNT_TYPE, K12_COST_ACCOUNT_TYPE } from "./HouseholdCoA";
@@ -54,8 +55,7 @@ export class Calculator {
             child.yearOfBirth <= year &&
             child.yearOfBirth + MAX_CHILD_CARE_AGE >= year
           ) {
-            if (ChildCareStrategy.DAYCARE === household.childStrategy.childCareStrategy ||
-              ChildCareStrategy.IN_HOME === household.childStrategy.childCareStrategy)
+            if (!MULTI_KID_CHILD_CARE_STRATEGIES.includes( household.childStrategy.childCareStrategy ))
               household.cashFlowStatement.addToAccount(
                 CHILD_CARE_COST_ACCOUNT_TYPE.id, 
                 year,

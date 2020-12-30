@@ -17,6 +17,13 @@ export enum ChildCareStrategy {
   NANNY_BIG_CITY
 }
 
+export const MULTI_KID_CHILD_CARE_STRATEGIES = [
+  ChildCareStrategy.FAMILY, 
+  ChildCareStrategy.AU_PAIR, 
+  ChildCareStrategy.NANNY, 
+  ChildCareStrategy.NANNY_BIG_CITY 
+]
+
 export const CHILD_CARE_TEXT = [
   "Family / You",
   "In-home daycare",

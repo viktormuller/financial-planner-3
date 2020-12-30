@@ -25,7 +25,8 @@ import {
   MAX_COLLEGE_AGE,
   MAX_K12_AGE,
   MONTHLY_CHILD_SUPPLY_MAX,
-  MONTHLY_CHILD_SUPPLY_MIN
+  MONTHLY_CHILD_SUPPLY_MIN,
+  MULTI_KID_CHILD_CARE_STRATEGIES
 } from "./ChildStrategyEnums";
 import { MonetaryAmount } from "./MonetaryAmount";
 import RangeSlider from "react-bootstrap-range-slider";
@@ -38,6 +39,11 @@ function annualCostToMonthlyText(amount: MonetaryAmount){
 
 function annualCostToText(amount: MonetaryAmount){
   return amount.currency + " " + d3.format(",.0f")(amount.amount) + " / year";
+}
+
+function addPerKidToChildCareCostTooltip(tooltips: string[]){
+  return tooltips.map((value, index) => 
+    MULTI_KID_CHILD_CARE_STRATEGIES.includes(index)? value : value + " / kid");
 }
 
 export class ChildCostInput extends Component<
@@ -140,7 +146,7 @@ export class ChildCostInput extends Component<
                 <ToggleButtonFormGroup
                   label="What do you have planned for childcare?"                  
                   buttonLabels={CHILD_CARE_TEXT}
-                  tooltipLabels={CHILD_CARE_COST.map(annualCostToMonthlyText)}
+                  tooltipLabels={addPerKidToChildCareCostTooltip( CHILD_CARE_COST.map(annualCostToMonthlyText))}
                   name="child_care"
                   value={this.props.childStrategy.childCareStrategy}
                   onChange={this.props.onChildCareStrategyChange}
@@ -270,7 +276,7 @@ export class ChildSupplyInput extends Component<
   render() {
     return (
       <FormGroup>
-        <Form.Label>How much are you anticipating spending on monthly supplies? <InfoIcon tooltip="Include all your other expenses. Typically this is between $1,000 and $2,000 per month in the USA. Key items to think about are e.g. food, housing, transport, clothing, healthcare, extra-curriculars, summer camp, etc."/>
+        <Form.Label>How much are you anticipating spending on monthly supplies per kid? <InfoIcon tooltip="Include all your other expenses. Typically this is between $1,000 and $2,000 per month in the USA. Key items to think about are e.g. food, housing, transport, clothing, healthcare, extra-curriculars, summer camp, etc."/>
         </Form.Label>
         <div className="mx-4">
           <RangeSlider
@@ -282,7 +288,7 @@ export class ChildSupplyInput extends Component<
             onChange={this.onChange.bind(this)}
             tooltip="on"
             tooltipLabel={value =>
-              this.props.annualSupply.currency + " " + d3.format(",")(value)
+              this.props.annualSupply.currency + " " + d3.format(",")(value) + " / kid"
             }
           />
         </div>
