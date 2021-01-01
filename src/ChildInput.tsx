@@ -288,7 +288,7 @@ export class ChildSupplyInput extends Component<
             onChange={this.onChange.bind(this)}
             tooltip="on"
             tooltipLabel={value =>
-              this.props.annualSupply.currency + " " + d3.format(",")(value) + " / kid"
+              this.props.annualSupply.currency + " " + d3.format(",")(value) + " / kid  "
             }
           />
         </div>
