@@ -11,8 +11,7 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
-  LabelList
+  Legend
 } from "recharts";
 
 import * as d3 from "d3-format";
