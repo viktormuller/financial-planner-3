@@ -5,6 +5,7 @@ import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css";
 import { render } from "react-dom";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { KidCostCalculator } from "./KidCostCalculator";
+import { NetWorthTable } from "./NetWorthTable";
 import { WelcomePage } from "./WelcomePage";
  
 function App() {
@@ -38,11 +39,13 @@ function App() {
           <Route path="/kidcalc">
             <KidCostCalculator />
           </Route>
+          <Route path="/results">
+            <NetWorthTable />
+          </Route>
         </Switch>
       </Container>
     </BrowserRouter>
   );
 }
-
 
 render(<App />, document.getElementById("root"));
