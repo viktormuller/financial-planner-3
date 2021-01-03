@@ -4,19 +4,20 @@ import { fpClient } from "./FPClient";
 
 export function NetWorthTable() {
   const [data, setData] = useState({ accounts: [] });
+
   useEffect(() => {
     async function fetchData() {
-      try {
-        let balances = await fpClient.getBalances();
-        setData(balances);
-      } catch (e) {
-        console.log(e);
-        setTimeout(() => fetchData(), 300);
-      }
+      let balances = await fpClient.getBalances();
+      setData(balances);
     }
-    fetchData();
-  })
-  if (data && data.accounts.length > 0) {
+
+    fetchData().catch((e) => {
+      console.log(e);      
+      }
+    )
+  },[]);
+
+  if (data && data.accounts && data.accounts.length > 0) {
     return (<Table>
       <thead>
         <tr>

@@ -22,7 +22,7 @@ function PlaidLinkButton(props: { linkToken: string }) {
     onSuccess: onSuccess
   };
 
-  const { open, ready, error } = usePlaidLink(config);
+  const { open, ready } = usePlaidLink(config);
   return <Button onClick={() => open()} disabled={!ready} variant="primary">Let's get started</Button>
 }
 
