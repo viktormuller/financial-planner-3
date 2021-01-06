@@ -8,9 +8,6 @@
 # testing
 /coverage
 
-# deploy scripts
-publish.bat
-
 # production
 /build
 /public/.htaccess
