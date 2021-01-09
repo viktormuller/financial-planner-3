@@ -1,5 +1,5 @@
-import axios, { AxiosInstance } from "axios";
-import {BankAccount, FP_API} from "financial-planner-api"; 
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { BankAccount, FP_API } from "financial-planner-api";
 
 export class AxiosFPClient implements FP_API {
   private client:AxiosInstance;
@@ -35,7 +35,8 @@ export class AxiosFPClient implements FP_API {
   }
 
   async getBankAccounts(userId: string):Promise<BankAccount[]> {
-    return (await this.client.get(`BankAccounts`)).data.accounts;
+    let accounts = (await this.client.get<any,AxiosResponse<{accounts: BankAccount[]}>>(`BankAccounts`)).data.accounts;    
+    return accounts;
   }
  
   
