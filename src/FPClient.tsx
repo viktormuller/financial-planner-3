@@ -1,10 +1,9 @@
 import axios, { AxiosInstance } from "axios";
+import {BankAccount, FP_API} from "financial-planner-api"; 
 
-
-
-export class FPClient {
+export class AxiosFPClient implements FP_API {
   private client:AxiosInstance;
-  constructor(){   
+  constructor(){       
     let PROTOCOL = process.env.REACT_APP_SERVER_PROTOCOL || "https";
     let HOST = process.env.REACT_APP_SERVER_HOST;    
     let PORT = process.env.REACT_APP_SERVER_PORT || (PROTOCOL === "http"?80:443);
@@ -13,7 +12,7 @@ export class FPClient {
         baseURL:`${PROTOCOL}://${HOST}:${PORT}/api/`
       }
     )
-
+ 
     //Add retry interceptor
     //TODO: limit retries, exponential backoff 
     this.client.interceptors.response.use(
@@ -34,6 +33,10 @@ export class FPClient {
       }
     )    
   }
+
+  async getBankAccounts(userId: string):Promise<BankAccount[]> {
+    return (await this.client.get(`BankAccounts`)).data.accounts;
+  }
  
   
 
@@ -42,20 +45,13 @@ export class FPClient {
     return response.data.link_token;
   }
 
-  async setPublicPlaidToken(publicToken:string){
-    console.log("Setting public plaid token.");
+  async setPublicToken(publicToken:string, userId?: string){    
     const response = await this.client.post("set_access_token", {
       public_token: publicToken
     });
-    console.log("Set access token");
     return response.data.itemId;
-  }
-
-  async getBalances(userId?:string){    
-    const response = await this.client.get("balances");
-    return response.data;
   }
 
 }
 
-export const fpClient = new FPClient();
+export const fpClient = new AxiosFPClient();

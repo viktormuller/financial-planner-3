@@ -11,7 +11,7 @@ function useQuery() {
 
 function PlaidLinkButton(props: { linkToken: string }) {
   const onSuccess = useCallback((token, metadata) => {
-    fpClient.setPublicPlaidToken(token); 
+    fpClient.setPublicToken(token); 
     window.location.href="/results";   
   }, []);
 
