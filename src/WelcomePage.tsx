@@ -12,7 +12,7 @@ function useQuery() {
 function PlaidLinkButton(props: { linkToken: string }) {
   const onSuccess = useCallback((token, metadata) => {
     fpClient.setPublicToken(token); 
-    window.location.href="/results";   
+    window.location.href="/networth";   
   }, []);
 
   console.log("Token: " + props.linkToken);

@@ -1,26 +1,62 @@
-import { BankAccount, BankAccountTaxType, BankAccountType } from "financial-planner-api";
+import * as d3 from "d3-format";
+import { BankAccount, BankAccountTaxType, BankAccountType, Holding, SecurityType } from "financial-planner-api";
 import React, { useEffect, useState } from "react";
 import { Spinner, Table } from "react-bootstrap";
 import { fpClient } from "./FPClient";
-import * as d3 from "d3-format";
 
 
-function AccountTypeTable(props: { accounts: BankAccount[], type: BankAccountType[], taxType?: BankAccountTaxType[] }) {
+function getValue(holdings: Holding[], accountId: string, securityType: SecurityType | SecurityType[]) {
+  let secType:SecurityType[] = ([] as SecurityType[]).concat(securityType);
+  
+  return holdings.map(holding => {
+    if (holding.accountId === accountId && secType.includes(holding.securityType)) {
+      return holding.value;
+    } else return 0;
+  }).reduce((a, b) => a + b);
+}
+
+function AccountTypeTable(props: {
+  accounts: BankAccount[],
+  type: BankAccountType[],
+  taxType?: BankAccountTaxType[],
+  holdings: Holding[]
+}) {
   const {
-    accounts, type, taxType
+    accounts, type, taxType, holdings
   } = props;
   return (
     <Table>
       <thead>
         <tr>
-          <th>Account name</th><th className="text-right">Balance</th>
+          <th>Account name</th>
+          <th className="text-right">Cash</th>
+          <th className="text-right">Fixed income</th>
+          <th className="text-right">Equities</th>
+          <th className="text-right">Other</th>
+          <th className="text-right">Total</th>
         </tr>
       </thead>
       <tbody>
         {accounts.map((account) =>
-          (type.includes(account.type) && (taxType ? taxType.includes(account.taxType) : true)) &&
+          (account.type && type.includes(account.type) &&
+            (taxType && account.taxType ? taxType.includes(account.taxType) : true)) &&
           <tr key={account.accountId}>
             <td key={account.accountId + "_name"}>{account.name}</td>
+            <td key={account.accountId + "_cash"} className="text-right" >
+              {account.currency + " " + d3.format(",.0f")(getValue(holdings, account.accountId, SecurityType.cash))}
+              </td>
+            <td key={account.accountId + "_fixed_income"} className="text-right" >
+            {account.currency + " " + d3.format(",.0f")(getValue(holdings, account.accountId, SecurityType["fixed income"]))}
+            </td>
+            <td key={account.accountId + "_equities"} className="text-right" >
+            {account.currency + " " + d3.format(",.0f")(getValue(holdings, account.accountId, SecurityType.equity))}
+            </td>
+            <td key={account.accountId + "_other"} className="text-right" >
+            {account.currency + " " + d3.format(",.0f")(getValue(
+              holdings, 
+              account.accountId, 
+              [SecurityType.derivative, SecurityType.etf, SecurityType.loan, SecurityType["mutual fund"], SecurityType.other]))}
+            </td>
             <td key={account.accountId + "_balance"} className="text-right" >
               {account.currency + " " + d3.format(",.0f")(account.balance)}</td>
           </tr>
@@ -31,14 +67,27 @@ function AccountTypeTable(props: { accounts: BankAccount[], type: BankAccountTyp
 
 export function NetWorthTable() {
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
+  const [holdings, setHoldings] = useState<Holding[]>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchAccounts() {
       let balances = await fpClient.getBankAccounts("");
       setAccounts(balances);
     }
 
-    fetchData().catch((e) => {
+    fetchAccounts().catch((e) => {
+      console.log(e);
+    }
+    )
+  }, []);
+
+  useEffect(() => {
+    async function fetchHoldings() {
+      let holdings = await fpClient.getHoldings();
+      setHoldings(holdings);
+    }
+
+    fetchHoldings().catch((e) => {
       console.log(e);
     }
     )
@@ -46,21 +95,33 @@ export function NetWorthTable() {
 
   if (accounts && accounts.length > 0) {
     return (
-      <div style={{maxWidth: "400px"}}>
+      <div>
         <h2>Net worth summary</h2>
         <h3>Cash accounts</h3>
-        <AccountTypeTable type={[BankAccountType.depository]} accounts={accounts} />
+        <AccountTypeTable type={[BankAccountType.depository]} accounts={accounts} holdings={holdings}/>
         <h3>Investment accounts</h3>
         <AccountTypeTable
           type={[BankAccountType.investment]}
           taxType={[BankAccountTaxType.TAXABLE, BankAccountTaxType.OTHER]}
-          accounts={accounts} />
+          accounts={accounts} 
+          holdings={holdings}/>
         <h3>Retirement accounts - Tax deferred</h3>
-        <AccountTypeTable type={[BankAccountType.investment]} taxType={[BankAccountTaxType.TAX_DEFERRED]} accounts={accounts} />
+        <AccountTypeTable 
+          type={[BankAccountType.investment]} 
+          taxType={[BankAccountTaxType.TAX_DEFERRED]} 
+          accounts={accounts} 
+          holdings={holdings}/>
         <h3>Retirement accounts - Tax free</h3>
-        <AccountTypeTable type={[BankAccountType.investment]} taxType={[BankAccountTaxType.TAX_FREE]} accounts={accounts} />
+        <AccountTypeTable 
+          type={[BankAccountType.investment]} 
+          taxType={[BankAccountTaxType.TAX_FREE]} 
+          accounts={accounts} 
+          holdings={holdings}/>
         <h3>Liabilities</h3>
-        <AccountTypeTable type={[BankAccountType.credit, BankAccountType.loan]} accounts={accounts} />
+        <AccountTypeTable 
+          type={[BankAccountType.credit, BankAccountType.loan]} 
+          accounts={accounts} 
+          holdings={holdings}/>
       </div>);
   }
   else return <Spinner animation="border" role="status">

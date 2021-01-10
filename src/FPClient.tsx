@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { BankAccount, FP_API } from "financial-planner-api";
+import { Holding } from "financial-planner-api/build/Holding";
 
 export class AxiosFPClient implements FP_API {
   private client:AxiosInstance;
@@ -33,9 +34,15 @@ export class AxiosFPClient implements FP_API {
       }
     )    
   }
+  async getHoldings(): Promise<Holding[]> {
+    const holdings = (await this.client.get<any,AxiosResponse<{holdings: Holding[]}>>("Holdings")).data.holdings;
+    console.log("Holdings: ")
+    console.log(holdings);
+    return holdings; 
+  }
 
   async getBankAccounts(userId: string):Promise<BankAccount[]> {
-    let accounts = (await this.client.get<any,AxiosResponse<{accounts: BankAccount[]}>>(`BankAccounts`)).data.accounts;    
+    const accounts = (await this.client.get<any,AxiosResponse<{accounts: BankAccount[]}>>(`BankAccounts`)).data.accounts;    
     return accounts;
   }
  
