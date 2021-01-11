@@ -1,31 +1,61 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useContext, useState } from "react";
-import { Button, Container, Form, Nav, Navbar } from "react-bootstrap";
+import { Container, Form, Nav, Navbar } from "react-bootstrap";
 import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css";
 import { render } from "react-dom";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Switch, Link, reload} from "react-router-dom";
+import { AuthButton } from "./AuthButton";
 import { KidCostCalculator } from "./KidCostCalculator";
+import { LandingPage } from "./LandingPage";
+import { LoginPage } from "./LoginPage";
 import { NetWorthTable } from "./NetWorthTable";
+import { SignupPage } from "./SignupPage";
+import { fakeAuth, User, USER_CONTEXT } from "./UserContext";
 import { WelcomePage } from "./WelcomePage";
 
-import { User, UserContext, USER_CONTEXT } from "./UserContext";
-import { LoginPage } from "./LoginPage";
+
+function PrivateRoute({ children, ...rest }) {
+  let auth = useContext(USER_CONTEXT);
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        auth.user ? (
+          children
+        ) : (
+            <Redirect
+              to={{
+                pathname: "/login",
+                state: { from: location }
+              }}
+            />
+          )
+      }
+    />
+  );
+}
 
 function App() {
   let [userState, setUserState] = useState<User>();
-  function logIn(user: User) { 
-    console.log("User: " + user.displayName);
-    setUserState(user); window.location.href = "/home" }
-  function logOutImpl() {
-    setUserState(undefined);
-    window.location.href = "/home"
+
+  function logIn(user: User, cb) {
+    fakeAuth.logIn(user, () => {
+      setUserState(user);
+      cb();
+    })
+  }
+  function logOut(cb) {
+    fakeAuth.logOut(() => {
+      setUserState(undefined);
+      cb();
+    })
   }
 
   return (
-    <USER_CONTEXT.Provider value={{ user: userState, logIn: logIn, logOut: logOutImpl }}>
+    <USER_CONTEXT.Provider value={{ user: userState, logIn: logIn, logOut: logOut }}>
       <BrowserRouter>
         <Navbar bg="dark" variant="dark" sticky="top" expand="md" >
-          <Navbar.Brand>
+          <Navbar.Brand as={Link} to="/">
             <img src="/favicon.svg"
               alt=""
               width="30"
@@ -35,33 +65,34 @@ function App() {
           <Navbar.Toggle />
           <Navbar.Collapse>
             <Nav>
-              <Nav.Link href="/home">Home</Nav.Link>
-              <Nav.Link href="/kidcalc">Kid cost calculator</Nav.Link>
+              <Nav.Link as={Link} to="/">Home</Nav.Link>
+              <Nav.Link as={Link} to="/kidcalc">Kid cost calculator</Nav.Link>
             </Nav>
 
             <Form inline className="ml-auto">
-              <USER_CONTEXT.Consumer>{({ user, logOut }) => {
-                if (user)
-                  return (<Button variant="primary" onClick={logOut}>Logout</Button>)
-                else return <Button variant="primary" href="/login">Login</Button>;
-              }}
-              </USER_CONTEXT.Consumer>
+              <AuthButton/>
             </Form>
           </Navbar.Collapse>
         </Navbar>
         <Container className="my-2" id="main-container" >
           <Switch>
-            <Route exact path={["/", "/home"]}>
+            <Route exact path="/">
+              <LandingPage/>
+            </Route>
+            <Route path={"/welcome"}>
               <WelcomePage />
             </Route>
             <Route path="/kidcalc">
               <KidCostCalculator />
             </Route>
-            <Route path="/networth">
+            <PrivateRoute path="/networth">
               <NetWorthTable />
-            </Route>
+            </PrivateRoute>
             <Route path="/login">
               <LoginPage />
+            </Route>
+            <Route path="/signup">
+              <SignupPage />
             </Route>
           </Switch>
         </Container>

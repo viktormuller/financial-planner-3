@@ -7,12 +7,21 @@ export interface User {
 
 export interface UserContext {
     user?: User,
-    logIn(user: User): void,
-    logOut(): void
+    logIn(user: User, cb): void,
+    logOut(cb): void
 }
 
-export const USER_CONTEXT = createContext<UserContext>({
+export const fakeAuth = {
     user: undefined,
-    logIn: (user)=>{},
-    logOut: () => {}
-})
+    logIn(user,cb){
+        fakeAuth.user=user;
+        setTimeout(cb,100);
+    },
+    logOut(cb){
+        fakeAuth.user = undefined;
+        setTimeout(cb,100);
+    }
+
+}
+
+export const USER_CONTEXT = createContext<UserContext>(fakeAuth);

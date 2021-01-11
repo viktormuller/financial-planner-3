@@ -1,34 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Jumbotron } from "react-bootstrap";
-import { usePlaidLink } from 'react-plaid-link';
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import { Advisors } from "./Advisors";
 import { fpClient } from './FPClient';
+import { PlaidLinkButton } from './PlaidLinkButton';
+import { USER_CONTEXT } from './UserContext';
+
+
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-function PlaidLinkButton(props: { linkToken: string }) {
-  const onSuccess = useCallback((token, metadata) => {
-    fpClient.setPublicToken(token); 
-    window.location.href="/networth";   
-  }, []);
-
-  console.log("Token: " + props.linkToken);
-
-  const config = {
-    token: props.linkToken,
-    onSuccess: onSuccess
-  };
-
-  const { open, ready } = usePlaidLink(config);
-  return <Button onClick={() => open()} disabled={!ready} variant="primary">Let's get started</Button>
-}
-
 export function WelcomePage() {
 
   const [linkToken, setToken] = useState<string>();
+  let history = useHistory();
+  let { user } = useContext(USER_CONTEXT);
 
   let advisorId = useQuery().get("advisorId");
   var advisor;
@@ -45,6 +33,7 @@ export function WelcomePage() {
     getLinkToken();
   })
 
+
   return (
     <Jumbotron>
       <h1>Welcome to Enough Calculator!</h1>
@@ -54,7 +43,10 @@ export function WelcomePage() {
           We do not use your data for any other purpose.
         </p>
       <p>
-        {linkToken!==undefined?<PlaidLinkButton linkToken={linkToken}/>: "Loading..."}
+        {
+          user ? linkToken !== undefined ? <PlaidLinkButton linkToken={linkToken} /> : "Loading..." :
+            <Button variant="primary" onClick={() => { history.push("/signup") }}>Let's get started</Button>
+        }
       </p>
     </Jumbotron>
   )
