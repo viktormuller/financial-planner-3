@@ -36,8 +36,6 @@ export class AxiosFPClient implements FP_API {
   }
   async getHoldings(): Promise<Holding[]> {
     const holdings = (await this.client.get<any,AxiosResponse<{holdings: Holding[]}>>("Holdings")).data.holdings;
-    console.log("Holdings: ")
-    console.log(holdings);
     return holdings; 
   }
 

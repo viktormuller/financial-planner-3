@@ -1,6 +1,6 @@
 export const INTRO = [
     {
-        title: "Welcome to Enough Calculator!",
+        title: "Welcome to our Kid Cost Calculator!",
         body: "This calculator helps you estimate how much it will cost to raise your kids."
     },
     {

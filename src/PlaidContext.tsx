@@ -47,12 +47,11 @@ export function useGetLinkToken() {
     const [linkToken, setLinkToken] = useState<string>();
     useEffect(() => {
         async function getLinkToken() {
-            if (!linkToken) {
-                let token = await fpClient.getLinkToken();
-                setLinkToken(token);
-            }
+            let token = await fpClient.getLinkToken();
+            setLinkToken(token);
         }
-        getLinkToken();        
-    },[linkToken])
+
+        getLinkToken();
+    }, [])
     return linkToken;
 }

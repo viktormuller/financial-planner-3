@@ -11,6 +11,7 @@ import { LoginPage } from "./LoginPage";
 import { NetWorthPage } from "./NetWorthPage";
 import { PLAID_CONTEXT, usePlaidProvider } from "./PlaidContext";
 import { SignupPage } from "./SignupPage";
+import { SuccessPage } from "./SuccessPage";
 import { fakeAuth, User, USER_CONTEXT } from "./UserContext";
 import { WelcomePage } from "./WelcomePage";
 
@@ -70,10 +71,9 @@ function App() {
           <Navbar.Collapse>
             <Nav>
               <Nav.Link as={Link} to="/">Home</Nav.Link>
-              <Nav.Link as={Link} to="/networth">Net worth</Nav.Link>
+              {userState && <Nav.Link as={Link} to="/networth">Net worth</Nav.Link>}
               <Nav.Link as={Link} to="/kidcalc">Kid cost calculator</Nav.Link>
             </Nav>
-
             <Form inline className="ml-auto">
               <AuthButton/>
             </Form>
@@ -93,6 +93,9 @@ function App() {
             <PrivateRoute path="/networth">
               <NetWorthPage />
             </PrivateRoute>
+            <Route path="/success">
+              <SuccessPage/>
+            </Route>
             <Route path="/login">
               <LoginPage />
             </Route>
