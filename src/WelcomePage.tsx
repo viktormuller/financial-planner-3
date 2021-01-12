@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Button, Jumbotron } from "react-bootstrap";
-import { useLocation, useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { Advisors } from "./Advisors";
-import { fpClient } from './FPClient';
+import { useGetLinkToken, usePlaidProvider } from './PlaidContext';
 import { PlaidLinkButton } from './PlaidLinkButton';
 import { USER_CONTEXT } from './UserContext';
 
@@ -14,7 +14,7 @@ function useQuery() {
 
 export function WelcomePage() {
 
-  const [linkToken, setToken] = useState<string>();
+
   let history = useHistory();
   let { user } = useContext(USER_CONTEXT);
 
@@ -23,16 +23,15 @@ export function WelcomePage() {
   if (advisorId)
     advisor = Advisors.getAdvisor(advisorId);
 
-  useEffect(() => {
-    async function getLinkToken() {
-      if (!linkToken) {
-        let token = await fpClient.getLinkToken();
-        setToken(token);
-      }
-    }
-    getLinkToken();
-  })
 
+  let linkToken = useGetLinkToken();
+  const { connect } = usePlaidProvider();
+
+  let callback = () => {
+    connect(() => {
+      history.push("/networth");
+    });
+  }
 
   return (
     <Jumbotron>
@@ -44,8 +43,8 @@ export function WelcomePage() {
         </p>
       <p>
         {
-          user ? linkToken !== undefined ? <PlaidLinkButton linkToken={linkToken} /> : "Loading..." :
-            <Button variant="primary" onClick={() => { history.push("/signup") }}>Let's get started</Button>
+          user ? linkToken !== undefined ? <PlaidLinkButton linkToken={linkToken} callback={callback} /> : "Loading..." :
+            <Button variant="primary" onClick={() => { history.push("/signup") }}>Create an account</Button>
         }
       </p>
     </Jumbotron>

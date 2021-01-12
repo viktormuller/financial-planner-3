@@ -3,12 +3,13 @@ import React, { useContext, useState } from "react";
 import { Container, Form, Nav, Navbar } from "react-bootstrap";
 import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css";
 import { render } from "react-dom";
-import { BrowserRouter, Redirect, Route, Switch, Link, reload} from "react-router-dom";
+import { BrowserRouter, Link, Redirect, Route, Switch } from "react-router-dom";
 import { AuthButton } from "./AuthButton";
 import { KidCostCalculator } from "./KidCostCalculator";
 import { LandingPage } from "./LandingPage";
 import { LoginPage } from "./LoginPage";
-import { NetWorthTable } from "./NetWorthTable";
+import { NetWorthPage } from "./NetWorthPage";
+import { PLAID_CONTEXT, usePlaidProvider } from "./PlaidContext";
 import { SignupPage } from "./SignupPage";
 import { fakeAuth, User, USER_CONTEXT } from "./UserContext";
 import { WelcomePage } from "./WelcomePage";
@@ -51,8 +52,11 @@ function App() {
     })
   }
 
+  const plaidProvider = usePlaidProvider();
+
   return (
     <USER_CONTEXT.Provider value={{ user: userState, logIn: logIn, logOut: logOut }}>
+      <PLAID_CONTEXT.Provider value={plaidProvider}>
       <BrowserRouter>
         <Navbar bg="dark" variant="dark" sticky="top" expand="md" >
           <Navbar.Brand as={Link} to="/">
@@ -66,6 +70,7 @@ function App() {
           <Navbar.Collapse>
             <Nav>
               <Nav.Link as={Link} to="/">Home</Nav.Link>
+              <Nav.Link as={Link} to="/networth">Net worth</Nav.Link>
               <Nav.Link as={Link} to="/kidcalc">Kid cost calculator</Nav.Link>
             </Nav>
 
@@ -86,7 +91,7 @@ function App() {
               <KidCostCalculator />
             </Route>
             <PrivateRoute path="/networth">
-              <NetWorthTable />
+              <NetWorthPage />
             </PrivateRoute>
             <Route path="/login">
               <LoginPage />
@@ -97,6 +102,7 @@ function App() {
           </Switch>
         </Container>
       </BrowserRouter>
+      </PLAID_CONTEXT.Provider>
     </USER_CONTEXT.Provider>
   );
 }

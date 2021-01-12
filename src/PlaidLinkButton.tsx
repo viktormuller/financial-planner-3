@@ -6,21 +6,23 @@ import { fpClient } from "./FPClient";
 //Usage: 
 //{linkToken !== undefined ? <PlaidLinkButton linkToken={linkToken} /> : "Loading..."}
 
-export function PlaidLinkButton(props: { linkToken: string }) {
+export function PlaidLinkButton(props: { linkToken: string, callback?:()=>void }) {  
+    const {linkToken, callback}  = props;
+    
     const onSuccess = useCallback((token, metadata) => {
         fpClient.setPublicToken(token);
-        window.location.href = "/networth";
-    }, []);
+        if (callback !== undefined) callback();
+    }, [callback]);
 
     console.log("Token: " + props.linkToken);
 
     const config = {
-        token: props.linkToken,
+        token: linkToken,
         onSuccess: onSuccess
     };
 
     const { open, ready } = usePlaidLink(config);
-    return <Button onClick={() => open()} disabled={!ready} variant="primary">Let's get started</Button>
+    return <Button onClick={() => open()} disabled={!ready} variant="primary">Connect my account</Button>
 }
 
 
