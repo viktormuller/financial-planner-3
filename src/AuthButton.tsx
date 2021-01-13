@@ -9,7 +9,7 @@ export function AuthButton(){
     return (
     <USER_CONTEXT.Consumer>{({ user, logOut }) => {
         if (user)
-          return (<Button variant="secondary" onClick={() => logOut(() => {history.push("/")})}>Logout</Button>)
+          return (<Button variant="secondary" onClick={() => logOut(() => {history.push("/networth")})}>Logout</Button>)
         else return <Button variant="primary" href="/login">Login</Button>;
       }}
     </USER_CONTEXT.Consumer>);
