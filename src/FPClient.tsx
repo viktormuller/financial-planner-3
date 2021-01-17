@@ -1,57 +1,66 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { BankAccount, FP_API } from "financial-planner-api";
 import { Holding } from "financial-planner-api/build/Holding";
+import { useState } from "react";
 
 export class AxiosFPClient implements FP_API {
-  private client:AxiosInstance;
-  constructor(){       
+  private client: AxiosInstance;
+  accessToken: string;
+  constructor() {
     let PROTOCOL = process.env.REACT_APP_SERVER_PROTOCOL || "https";
-    let HOST = process.env.REACT_APP_SERVER_HOST;    
-    let PORT = process.env.REACT_APP_SERVER_PORT || (PROTOCOL === "http"?80:443);
+    let HOST = process.env.REACT_APP_SERVER_HOST;
+    let PORT = process.env.REACT_APP_SERVER_PORT || (PROTOCOL === "http" ? 80 : 443);
     this.client = axios.create(
       {
-        baseURL:`${PROTOCOL}://${HOST}:${PORT}/api/`
+        baseURL: `${PROTOCOL}://${HOST}:${PORT}/api/`
       }
     )
- 
+
     //Add retry interceptor
     //TODO: limit retries, exponential backoff 
     this.client.interceptors.response.use(
-      (response)=>{
+      (response) => {
         return response;
       },
-      (error)=>{        
-        const { config} = error;
-        if(error.config.data) error.config.data = JSON.parse(error.config.data);
-        const originalRequest = config;  
-        if(error.response && error.response.status) {                    
+      (error) => {
+        const { config } = error;
+        if (error.config.data) error.config.data = JSON.parse(error.config.data);
+        const originalRequest = config;
+        if (error.response && error.response.status) {
           return new Promise(
             (resolve, reject) => {
               setTimeout(() => resolve(this.client.request(originalRequest)), 1000);
             }
-          ) 
+          )
         } else return Promise.reject(error);
       }
-    )    
+    )
+
+    this.client.interceptors.request.use((config) => {
+      config.headers.Authorization = `Bearer ${this.accessToken}`;
+      return config;
+    })
+
   }
   async getHoldings(): Promise<Holding[]> {
-    const holdings = (await this.client.get<any,AxiosResponse<{holdings: Holding[]}>>("Holdings")).data.holdings;
-    return holdings; 
+    const holdings = (await this.client.get<any, AxiosResponse<{ holdings: Holding[] }>>("Holdings")).data.holdings;
+    return holdings;
   }
 
-  async getBankAccounts(userId: string):Promise<BankAccount[]> {
-    const accounts = (await this.client.get<any,AxiosResponse<{accounts: BankAccount[]}>>(`BankAccounts`)).data.accounts;    
+  async getBankAccounts(): Promise<BankAccount[]> {
+    const accounts = (await this.client.get<any, AxiosResponse<{ accounts: BankAccount[] }>>(`BankAccounts`)).data.accounts;
     return accounts;
   }
- 
-  
 
-  async getLinkToken(userId?:string){  
-    const response = await this.client.get("link_token?userId="+ userId);
+
+
+  async getLinkToken() {
+    const response = await this.client.get("link_token");
     return response.data.link_token;
   }
 
-  async setPublicToken(publicToken:string, userId?: string){    
+  async setPublicToken(publicToken: string) {
     const response = await this.client.post("set_access_token", {
       public_token: publicToken
     });
@@ -61,3 +70,16 @@ export class AxiosFPClient implements FP_API {
 }
 
 export const fpClient = new AxiosFPClient();
+
+export function useFPClient() {
+  let { getAccessTokenSilently } = useAuth0();
+  async function reloadToken() {
+    const token = await getAccessTokenSilently({
+      audience: "http://localhost:8000",
+      scope: 'read:holdings read:balances create:link_token create:public_token'
+    })
+    fpClient.accessToken = token;
+  };
+ // reloadToken();
+  return fpClient;
+}

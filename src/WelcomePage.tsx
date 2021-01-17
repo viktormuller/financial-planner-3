@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import React from 'react';
 import { Button, Jumbotron } from "react-bootstrap";
 import { useHistory, useLocation } from "react-router-dom";
 import { Advisors } from "./Advisors";
 import { useGetLinkToken, usePlaidProvider } from './PlaidContext';
 import { PlaidLinkButton } from './PlaidLinkButton';
-import { USER_CONTEXT } from './UserContext';
 
 
 
@@ -15,8 +15,8 @@ function useQuery() {
 export function WelcomePage() {
 
 
-  let history = useHistory();
-  let { user } = useContext(USER_CONTEXT);
+  let history = useHistory();  
+  const {isAuthenticated, loginWithRedirect} = useAuth0();
 
   let advisorId = useQuery().get("advisorId");
   var advisor;
@@ -43,8 +43,10 @@ export function WelcomePage() {
         </p>
       <p>
         {
-          user ? linkToken !== undefined ? <PlaidLinkButton linkToken={linkToken} callback={callback} /> : "Loading..." :
-            <Button variant="primary" onClick={() => { history.push("/signup") }}>Create an account</Button>
+          isAuthenticated ? linkToken !== undefined ? <PlaidLinkButton linkToken={linkToken} callback={callback} /> : "Loading..." :
+            <Button variant="primary" onClick={() => { loginWithRedirect({
+              screen_hint:"signup"
+            }) }}>Create an account</Button>
         }
       </p>
     </Jumbotron>

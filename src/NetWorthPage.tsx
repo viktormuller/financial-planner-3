@@ -3,7 +3,7 @@ import { BankAccount, BankAccountTaxType, BankAccountType, Holding, SecurityType
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Jumbotron, Spinner, Table } from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
-import { fpClient } from "./FPClient";
+import { useFPClient } from "./FPClient";
 import { PLAID_CONTEXT, useGetLinkToken } from "./PlaidContext";
 import { PlaidLinkButton } from "./PlaidLinkButton";
 
@@ -71,10 +71,11 @@ function AccountTypeTable(props: {
 export function NetWorthTable() {
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [holdings, setHoldings] = useState<Holding[]>([]);
+  const fpClient = useFPClient();
 
   useEffect(() => {
     async function fetchAccounts() {
-      let balances = await fpClient.getBankAccounts("");
+      let balances = await fpClient.getBankAccounts();
       setAccounts(balances);
     }
 

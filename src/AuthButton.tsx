@@ -1,16 +1,15 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
 import { Button } from "react-bootstrap";
-import { USER_CONTEXT } from "./UserContext";
-import {useHistory} from "react-router-dom";
 
-export function AuthButton(){
+export function AuthButton() {
 
-    let history = useHistory();
-    return (
-    <USER_CONTEXT.Consumer>{({ user, logOut }) => {
-        if (user)
-          return (<Button variant="secondary" onClick={() => logOut(() => {history.push("/")})}>Logout</Button>)
-        else return <Button variant="primary" href="/login">Login</Button>;
-      }}
-    </USER_CONTEXT.Consumer>);
+  
+  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+
+
+  if (isAuthenticated)
+    return (<Button variant="secondary" onClick={() => logout({ returnTo: "http://localhost:3000/" })}>Logout</Button>)
+  else return <Button variant="primary" onClick={() => loginWithRedirect()}>Login</Button>;
 }
+
