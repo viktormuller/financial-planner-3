@@ -10,7 +10,7 @@ import { AuthButton } from "./AuthButton";
 import { KidCostCalculator } from "./KidCostCalculator";
 import { LandingPage } from "./LandingPage";
 import { NetWorthPage } from "./NetWorthPage";
-import { PLAID_CONTEXT, usePlaidProvider } from "./PlaidContext";
+import { PlaidContextProvider } from "./PlaidContext";
 import { SuccessPage } from "./SuccessPage";
 import { WelcomePage } from "./WelcomePage";
 
@@ -29,14 +29,16 @@ function PrivateRoute({ component, ...rest }) {
 //TODO: hide networth without logged in user. Probably refactor Navbar to its own component
 function App() {
 
-  const plaidProvider = usePlaidProvider();
+  
 
   return (
     <Auth0Provider domain="dev-finplanner.us.auth0.com"
       clientId="afDzdMvPA1OWNimkuo6m9TCyr6dtfI4P"
       redirectUri="http://localhost:3000/networth"
-      onRedirectCallback={onRedirectCallback}>
-      <PLAID_CONTEXT.Provider value={plaidProvider}>
+      onRedirectCallback={onRedirectCallback}
+      audience="https://api.enoughcalc.com"
+      scope="crud:all">        
+      <PlaidContextProvider>
         <Router history={history}>
           <Navbar bg="dark" variant="dark" sticky="top" expand="md" >
             <Navbar.Brand as={Link} to="/">
@@ -76,7 +78,7 @@ function App() {
             </Switch>
           </Container>
         </Router>
-      </PLAID_CONTEXT.Provider>
+        </PlaidContextProvider>      
     </Auth0Provider>
   );
 }

@@ -67,19 +67,28 @@ export class AxiosFPClient implements FP_API {
     return response.data.itemId;
   }
 
+  async hasPlaidAccessToken() {
+    const response = await this.client
+      .get<any, AxiosResponse<{ has_plaid_access_token: boolean }>>("has_plaid_access_token");
+    return response.data.has_plaid_access_token;
+  }
+
 }
 
-export const fpClient = new AxiosFPClient();
+const fpClient = new AxiosFPClient();
+
 
 export function useFPClient() {
-  let { getAccessTokenSilently } = useAuth0();
+  const [isReady, setReady] = useState(false);
+  let { isAuthenticated, getAccessTokenSilently } = useAuth0();
   async function reloadToken() {
-    const token = await getAccessTokenSilently({
-      audience: "http://localhost:8000",
-      scope: 'read:holdings read:balances create:link_token create:public_token'
-    })
+    const token = await getAccessTokenSilently();
     fpClient.accessToken = token;
+    setReady(true);
   };
- // reloadToken();
-  return fpClient;
+  if (isAuthenticated) reloadToken();
+  return {
+    client: fpClient,
+    isReady: isReady
+  };
 }

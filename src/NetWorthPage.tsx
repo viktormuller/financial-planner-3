@@ -1,11 +1,11 @@
 import * as d3 from "d3-format";
 import { BankAccount, BankAccountTaxType, BankAccountType, Holding, SecurityType } from "financial-planner-api";
-import React, { useContext, useEffect, useState } from "react";
-import { Button, Jumbotron, Spinner, Table } from "react-bootstrap";
-import { useHistory, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Button, Spinner, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { AccountDataZeroState } from "./AccountDataZeroState";
 import { useFPClient } from "./FPClient";
-import { PLAID_CONTEXT, useGetLinkToken } from "./PlaidContext";
-import { PlaidLinkButton } from "./PlaidLinkButton";
+import { usePlaidContext } from "./PlaidContext";
 
 
 function getValue(holdings: Holding[], accountId: string, securityType: SecurityType | SecurityType[]) {
@@ -71,32 +71,32 @@ function AccountTypeTable(props: {
 export function NetWorthTable() {
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [holdings, setHoldings] = useState<Holding[]>([]);
-  const fpClient = useFPClient();
+  const { client, isReady } = useFPClient();
 
   useEffect(() => {
     async function fetchAccounts() {
-      let balances = await fpClient.getBankAccounts();
+      let balances = await client.getBankAccounts();
       setAccounts(balances);
     }
 
-    if (accounts === undefined || accounts.length === 0) {
+    if (isReady && (accounts === undefined || accounts.length === 0)) {
       fetchAccounts().catch((e) => {
         console.log(e);
       })
     }
-  }, [accounts]);
+  }, [accounts, client, isReady]);
 
   useEffect(() => {
     async function fetchHoldings() {
-      let holdings = await fpClient.getHoldings();
+      let holdings = await client.getHoldings();
       setHoldings(holdings);
     }
-    if (holdings === undefined || holdings.length === 0)
+    if (isReady && (holdings === undefined || holdings.length === 0))
       fetchHoldings().catch((e) => {
         console.log(e);
       }
       )
-  }, [holdings]);
+  }, [holdings, client, isReady]);
 
   if (accounts && accounts.length > 0 && holdings && holdings.length > 0) {
     return (
@@ -136,25 +136,20 @@ export function NetWorthTable() {
 }
 
 export function NetWorthPage() {
-  let { connected, connect } = useContext(PLAID_CONTEXT);
-  let history = useHistory();
-  let linkToken = useGetLinkToken();
-  if (connected) {
+  const { hasAccessToken, isLoadingAccessToken, checkAccessToken, checkedAccessToken } = usePlaidContext();
+  useEffect(()=>{
+    if (!hasAccessToken) checkAccessToken();
+  }, [hasAccessToken, checkAccessToken]);
+
+
+  if (hasAccessToken) {
     return <NetWorthTable />
-  } else {
-    return (
-      <Jumbotron>
-        <h1>Let's connect your accounts!</h1>
-          In order for your financial advisor to best help you, they need to take a look at your financials. Particularly any savings, investments and loans or credit cards you have. By logging in to your accounts and authorising Enough Calculator to access your data, we can speed this process up and allow them to provide you with more accurate advice.
-        <p className="mt-3">
-          {linkToken ?
-            <PlaidLinkButton linkToken={linkToken} callback={() => {
-              connect(() => {
-                history.push("/networth");
-              });
-            }} /> : "Loading..."}
-        </p>
-      </Jumbotron>
-    )
+  } else {    
+    if (isLoadingAccessToken || !checkedAccessToken) {
+      return <Spinner animation="border" role="status">
+      <span className="sr-only">Loading...</span>
+    </Spinner>
+    }
+    else return <AccountDataZeroState />
   }
 }

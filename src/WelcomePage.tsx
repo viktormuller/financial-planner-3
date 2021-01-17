@@ -1,9 +1,9 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import React from 'react';
-import { Button, Jumbotron } from "react-bootstrap";
+import React, { useEffect } from 'react';
+import { Button, Jumbotron, Spinner } from "react-bootstrap";
 import { useHistory, useLocation } from "react-router-dom";
 import { Advisors } from "./Advisors";
-import { useGetLinkToken, usePlaidProvider } from './PlaidContext';
+import { usePlaidContext } from './PlaidContext';
 import { PlaidLinkButton } from './PlaidLinkButton';
 
 
@@ -15,25 +15,25 @@ function useQuery() {
 export function WelcomePage() {
 
 
-  let history = useHistory();  
-  const {isAuthenticated, loginWithRedirect} = useAuth0();
+  let history = useHistory();
+  let { hasAccessToken, checkAccessToken, checkedAccessToken, isLoadingAccessToken } = usePlaidContext();
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+
+  useEffect(() => {
+    if (!hasAccessToken) checkAccessToken();
+  });
 
   let advisorId = useQuery().get("advisorId");
   var advisor;
   if (advisorId)
     advisor = Advisors.getAdvisor(advisorId);
 
-
-  let linkToken = useGetLinkToken();
-  const { connect } = usePlaidProvider();
-
   let callback = () => {
-    connect(() => {
-      history.push("/networth");
-    });
+    history.push("/networth");
   }
 
   return (
+
     <Jumbotron>
       <h1>Welcome to Enough Calculator!</h1>
       <p>
@@ -41,15 +41,21 @@ export function WelcomePage() {
           They will use it to prepare for your next meeting.
           We do not use your data for any other purpose.
         </p>
-      <p>
+      
         {
-          isAuthenticated ? linkToken !== undefined ? <PlaidLinkButton linkToken={linkToken} callback={callback} /> : "Loading..." :
-            <Button variant="primary" onClick={() => { loginWithRedirect({
-              screen_hint:"signup"
-            }) }}>Create an account</Button>
+          isLoading ? <Spinner animation="border" role="status" /> :
+            !isAuthenticated ?
+              <Button variant="primary" onClick={() => {
+                loginWithRedirect({
+                  screen_hint: "signup"
+                })
+              }}>Create an account</Button> :
+              !checkedAccessToken || isLoadingAccessToken ? <Spinner animation="border" role="status" /> :
+                !hasAccessToken ?
+                  <PlaidLinkButton callback={callback} /> :
+                  <Button variant="primary" onClick={callback}>See my net worth</Button>
         }
-      </p>
+      
     </Jumbotron>
   )
-
 }

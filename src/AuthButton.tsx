@@ -4,12 +4,12 @@ import { Button } from "react-bootstrap";
 
 export function AuthButton() {
 
-  
+
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
 
 
   if (isAuthenticated)
     return (<Button variant="secondary" onClick={() => logout({ returnTo: "http://localhost:3000/" })}>Logout</Button>)
-  else return <Button variant="primary" onClick={() => loginWithRedirect()}>Login</Button>;
+  else return <Button variant="primary" onClick={() => {loginWithRedirect();}}>Login</Button>;
 }
 

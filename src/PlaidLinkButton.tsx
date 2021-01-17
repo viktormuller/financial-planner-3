@@ -1,20 +1,30 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { usePlaidLink } from "react-plaid-link";
-import { fpClient } from "./FPClient";
+import { useFPClient } from "./FPClient";
+import { usePlaidContext } from "./PlaidContext";
 
-//Usage: 
-//{linkToken !== undefined ? <PlaidLinkButton linkToken={linkToken} /> : "Loading..."}
+function PlaidLinkButtonUnsafe(props: { callback?: () => void, linkToken: string }) {
 
-export function PlaidLinkButton(props: { linkToken: string, callback?:()=>void }) {  
-    const {linkToken, callback}  = props;
-    
-    const onSuccess = useCallback((token, metadata) => {
-        fpClient.setPublicToken(token);
-        if (callback !== undefined) callback();
-    }, [callback]);
+    const {linkToken, callback} = props;
+    const {
+        isLoadingAccessToken,
+        loadedAccessToken,
+        startedLoadingAccessToken,
+    } = usePlaidContext();
 
-    console.log("Token: " + props.linkToken);
+    const {client, isReady} = useFPClient();
+
+    const onSuccess = useCallback((token) => {
+        if (isReady && !isLoadingAccessToken) {
+            startedLoadingAccessToken();
+            client.setPublicToken(token).then(() => {
+                loadedAccessToken();
+                if (callback !== undefined) callback();
+            })
+        }
+    }, [isReady, isLoadingAccessToken, callback, client, startedLoadingAccessToken, loadedAccessToken]);
+
 
     const config = {
         token: linkToken,
@@ -22,7 +32,44 @@ export function PlaidLinkButton(props: { linkToken: string, callback?:()=>void }
     };
 
     const { open, ready } = usePlaidLink(config);
-    return <Button onClick={() => open()} disabled={!ready} variant="primary">Connect my account</Button>
+    return (
+        <Button onClick={() => { open() }} disabled={!ready} variant="primary">
+            {(ready) ? "Connect my account" : "Loading..."}
+        </Button>)
 }
 
+export function PlaidLinkButton(props: { callback?: () => void }) {    
 
+    const { callback } = props;
+    const { client, isReady } = useFPClient();
+    const {
+        hasLinkToken,
+        isLoadingLinkToken,  
+        linkToken,     
+        loadedLinkToken,
+        startedLoadingLinkToken
+    } = usePlaidContext();
+
+    console.log("Rendering Plaid Link Button, hasLinkToken: " + hasLinkToken + " is Loading link token: " + isLoadingLinkToken);
+
+    useEffect(() => {
+        if (isReady && !hasLinkToken && !isLoadingLinkToken) {
+            startedLoadingLinkToken();
+            console.log("Fetching link token");
+            client.getLinkToken()
+                .then((token) => {
+                    console.log("got Link token:  " + token);
+                    loadedLinkToken(token);                    
+                });
+        }
+    }, [isReady, hasLinkToken, isLoadingLinkToken, client, loadedLinkToken, startedLoadingLinkToken]);
+
+
+
+    if(hasLinkToken){
+        return <PlaidLinkButtonUnsafe callback={callback} linkToken = {linkToken}/>                
+    } else {
+        return <Button disabled>Loading...</Button>;
+    }
+
+}
