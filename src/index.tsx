@@ -28,13 +28,13 @@ function PrivateRoute({ component, ...rest }) {
 
 //TODO: hide networth without logged in user. Probably refactor Navbar to its own component
 function App() {
-
+  let {protocol, host } = window.location;
   
 
   return (
     <Auth0Provider domain="dev-finplanner.us.auth0.com"
       clientId="afDzdMvPA1OWNimkuo6m9TCyr6dtfI4P"
-      redirectUri="http://localhost:3000/networth"
+      redirectUri={`${protocol}//${host}/networth`}
       onRedirectCallback={onRedirectCallback}
       audience="https://api.enoughcalc.com"
       scope="crud:all">        

@@ -3,7 +3,7 @@ import React from "react";
 import { Button, Col, Image, Row } from "react-bootstrap";
 
 export function LandingPage() {
-    const {loginWithRedirect} = useAuth0();
+    const {loginWithRedirect} = useAuth0();    
     return (
         <React.Fragment>
             <h1>Welcome to Enough Calculator!</h1>
@@ -18,8 +18,7 @@ export function LandingPage() {
                             We can help you get confident with your finances. Connect your bank and brokerage accounts and see your total net worth before you can say gazillion.
                         </div>
                         <p className="d-flex mt-3">
-                            <Button className="mx-auto" onClick={()=>{loginWithRedirect({
-                                redirectUri: "http://localhost:3000/networth", 
+                            <Button className="mx-auto" onClick={()=>{loginWithRedirect({                                
                                 screen_hint: "signup"
                             })}}>Sign Up</Button>
                         </p>
