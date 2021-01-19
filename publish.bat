@@ -9,3 +9,5 @@ If NOT "%TARGET_ENV%"=="localhost"  (
   aws s3 rm --recursive %S3%
   aws s3 cp --recursive build %S3%
   )
+
+copy .env.localhost .env
