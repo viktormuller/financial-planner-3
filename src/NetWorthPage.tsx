@@ -18,6 +18,29 @@ function getValue(holdings: Holding[], accountId: string, securityType: Security
   }).reduce((a, b) => a + b);
 }
 
+function getAccountTypeCategories(accounts: BankAccount[]) {
+  let ret = {
+    hasCash: false, 
+    hasInvestment: false, 
+    hasDeferredRetirement: false, 
+    hasFreeRetirement: false, 
+    hasLiability: false
+  }
+  
+  accounts.forEach((account)=>{
+    let {type, taxType} = account;
+    if (type === BankAccountType.depository) ret.hasCash = true;
+    if (type === BankAccountType.investment) {
+      if (taxType === BankAccountTaxType.TAXABLE || taxType === BankAccountTaxType.OTHER) ret.hasInvestment=true;
+      if (taxType === BankAccountTaxType.TAX_DEFERRED ) ret.hasDeferredRetirement = true;
+      if (taxType === BankAccountTaxType.TAX_FREE) ret.hasFreeRetirement = true;
+    } 
+    if (type === BankAccountType.loan || type === BankAccountType.credit) ret.hasLiability=true;
+  });
+
+  return ret;
+}
+
 function AccountTypeTable(props: {
   accounts: BankAccount[],
   type: BankAccountType[],
@@ -27,15 +50,19 @@ function AccountTypeTable(props: {
   const {
     accounts, type, taxType, holdings
   } = props;
+
+  const hasInvestment = type.includes(BankAccountType.investment);  
+
   return (
     <Table>
       <thead>
         <tr>
           <th>Account name</th>
-          <th className="text-right">Cash</th>
-          <th className="text-right">Fixed income</th>
-          <th className="text-right">Equities</th>
-          <th className="text-right">Other</th>
+
+          {hasInvestment && <th className="text-right">Cash</th>}
+          {hasInvestment && <th className="text-right">Fixed income</th>}
+          {hasInvestment && <th className="text-right">Equities</th>}
+          {hasInvestment && <th className="text-right">Other</th>}
           <th className="text-right">Total</th>
         </tr>
       </thead>
@@ -45,21 +72,21 @@ function AccountTypeTable(props: {
             (taxType && account.taxType ? taxType.includes(account.taxType) : true)) &&
           <tr key={account.accountId}>
             <td key={account.accountId + "_name"}>{account.name}</td>
-            <td key={account.accountId + "_cash"} className="text-right" >
+            {hasInvestment && <td key={account.accountId + "_cash"} className="text-right" >
               {account.currency + " " + d3.format(",.0f")(getValue(holdings, account.accountId, SecurityType.cash))}
-            </td>
-            <td key={account.accountId + "_fixed_income"} className="text-right" >
+            </td>}
+            {hasInvestment && <td key={account.accountId + "_fixed_income"} className="text-right" >
               {account.currency + " " + d3.format(",.0f")(getValue(holdings, account.accountId, SecurityType["fixed income"]))}
-            </td>
-            <td key={account.accountId + "_equities"} className="text-right" >
+            </td>}
+            {hasInvestment && <td key={account.accountId + "_equities"} className="text-right" >
               {account.currency + " " + d3.format(",.0f")(getValue(holdings, account.accountId, SecurityType.equity))}
-            </td>
-            <td key={account.accountId + "_other"} className="text-right" >
+            </td>}
+            {hasInvestment && <td key={account.accountId + "_other"} className="text-right" >
               {account.currency + " " + d3.format(",.0f")(getValue(
                 holdings,
                 account.accountId,
                 [SecurityType.derivative, SecurityType.etf, SecurityType.loan, SecurityType["mutual fund"], SecurityType.other]))}
-            </td>
+            </td>}
             <td key={account.accountId + "_balance"} className="text-right" >
               {account.currency + " " + d3.format(",.0f")(account.balance)}</td>
           </tr>
@@ -98,36 +125,38 @@ export function NetWorthTable() {
       )
   }, [holdings, client, isReady]);
 
+  let {hasCash, hasDeferredRetirement, hasFreeRetirement, hasInvestment, hasLiability} = getAccountTypeCategories(accounts);
+
   if (accounts && accounts.length > 0 && holdings && holdings.length > 0) {
     return (
       <div>
         <div className="d-flex">
           <h2>Net worth summary</h2><Button as={Link} to="/success" className="ml-auto">Send to advisor</Button></div>
-        <h3>Cash accounts</h3>
-        <AccountTypeTable type={[BankAccountType.depository]} accounts={accounts} holdings={holdings} />
-        <h3>Investment accounts</h3>
-        <AccountTypeTable
+        {hasCash && <h3 className="mt-3">Cash accounts</h3>}
+        {hasCash && <AccountTypeTable type={[BankAccountType.depository]} accounts={accounts} holdings={holdings} />}
+        {hasInvestment && <h3 className="mt-3">Investment accounts</h3>}
+        {hasInvestment && <AccountTypeTable
           type={[BankAccountType.investment]}
           taxType={[BankAccountTaxType.TAXABLE, BankAccountTaxType.OTHER]}
           accounts={accounts}
-          holdings={holdings} />
-        <h3>Retirement accounts - Tax deferred</h3>
-        <AccountTypeTable
+          holdings={holdings} />}
+        {hasDeferredRetirement && <h3 className="mt-3">Retirement accounts - Tax deferred</h3>}
+        {hasDeferredRetirement && <AccountTypeTable
           type={[BankAccountType.investment]}
           taxType={[BankAccountTaxType.TAX_DEFERRED]}
           accounts={accounts}
-          holdings={holdings} />
-        <h3>Retirement accounts - Tax free</h3>
-        <AccountTypeTable
+          holdings={holdings} />}
+        {hasFreeRetirement && <h3 className="mt-3">Retirement accounts - Tax free</h3>}
+        {hasFreeRetirement && <AccountTypeTable
           type={[BankAccountType.investment]}
           taxType={[BankAccountTaxType.TAX_FREE]}
           accounts={accounts}
-          holdings={holdings} />
-        <h3>Liabilities</h3>
-        <AccountTypeTable
+          holdings={holdings} />}
+        {hasLiability && <h3 className="mt-3">Liabilities</h3>}
+        {hasLiability && <AccountTypeTable
           type={[BankAccountType.credit, BankAccountType.loan]}
           accounts={accounts}
-          holdings={holdings} />
+          holdings={holdings} />}
       </div>);
   }
   else return <React.Fragment><span>We are loading your accounts, it may take a moment...</span><Spinner className="ml-3" animation="border" role="status">
@@ -137,18 +166,18 @@ export function NetWorthTable() {
 
 export function NetWorthPage() {
   const { hasAccessToken, isLoadingAccessToken, checkAccessToken, checkedAccessToken } = usePlaidContext();
-  useEffect(()=>{
+  useEffect(() => {
     if (!hasAccessToken) checkAccessToken();
   }, [hasAccessToken, checkAccessToken]);
 
 
   if (hasAccessToken) {
     return <NetWorthTable />
-  } else {    
+  } else {
     if (isLoadingAccessToken || !checkedAccessToken) {
       return <Spinner animation="border" role="status">
-      <span className="sr-only">Loading...</span>
-    </Spinner>
+        <span className="sr-only">Loading...</span>
+      </Spinner>
     }
     else return <AccountDataZeroState />
   }
