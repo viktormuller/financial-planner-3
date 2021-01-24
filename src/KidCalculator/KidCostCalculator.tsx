@@ -1,16 +1,15 @@
-import React from "react";
-import { Component } from "react"
+import * as d3 from "d3-format";
+import React, { Component } from "react";
 import { Col, Row } from "react-bootstrap";
+import ReactJoyride from "react-joyride";
+import { INTRO } from "../Intro";
 import { Calculator } from "./Calculator";
 import { Child } from "./Child";
 import { ChildCostGraph } from "./ChildCostGraph";
 import { Household } from "./Household";
+import { CHILD_COST_ACCOUNT_TYPE } from "financial-planner-api";
 import { HouseholdInput } from "./HouseholdInput";
-import * as d3 from "d3-format";
-import { CHILD_COST_ACCOUNT_TYPE } from "./HouseholdCoA";
-import ReactJoyride from "react-joyride";
-import { INTRO } from "./Intro";
-
+ 
 const steps = [{
   content: (
     <React.Fragment>

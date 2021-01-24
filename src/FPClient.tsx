@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { BankAccount, FP_API } from "financial-planner-api";
-import { Holding } from "financial-planner-api/build/Holding";
-import { useState } from "react";
+import { BankAccount, FinancialAccount, FP_API } from "financial-planner-api";
+import { Holding } from "financial-planner-api";
+import { useEffect, useState } from "react";
 
 export class AxiosFPClient implements FP_API {
   private client: AxiosInstance;
@@ -17,31 +17,16 @@ export class AxiosFPClient implements FP_API {
       }
     )
 
-    //Add retry interceptor
-    //TODO: limit retries, exponential backoff 
-    this.client.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      (error) => {
-        const { config } = error;
-        if (error.config.data) error.config.data = JSON.parse(error.config.data);
-        const originalRequest = config;
-        if (error.response && error.response.status) {
-          return new Promise(
-            (resolve, reject) => {
-              setTimeout(() => resolve(this.client.request(originalRequest)), 1000);
-            }
-          )
-        } else return Promise.reject(error);
-      }
-    )
-
     this.client.interceptors.request.use((config) => {
       config.headers.Authorization = `Bearer ${this.accessToken}`;
       return config;
     })
 
+  }
+  async getCashFlowAccounts(userId?: string): Promise<FinancialAccount[]> {
+    const cfAccounts = (await this.client.get<any, AxiosResponse<{ accounts: FinancialAccount[] }>>("CashFlowAccounts")).data.accounts;
+    console.log(cfAccounts);
+    return cfAccounts;
   }
   async getHoldings(): Promise<Holding[]> {
     const holdings = (await this.client.get<any, AxiosResponse<{ holdings: Holding[] }>>("Holdings")).data.holdings;
@@ -81,12 +66,19 @@ const fpClient = new AxiosFPClient();
 export function useFPClient() {
   const [isReady, setReady] = useState(false);
   let { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  async function reloadToken() {
-    const token = await getAccessTokenSilently();
-    fpClient.accessToken = token;
-    setReady(true);
-  };
-  if (isAuthenticated) reloadToken();
+
+
+  useEffect(() => {
+    async function reloadToken() {
+      if (fpClient.accessToken === undefined) {
+        const token = await getAccessTokenSilently();
+        fpClient.accessToken = token;
+        setReady(true);
+      } else if (!isReady) setReady(true);
+    };
+    if (isAuthenticated) reloadToken();
+  }, [isAuthenticated, getAccessTokenSilently, isReady]);
+
   return {
     client: fpClient,
     isReady: isReady

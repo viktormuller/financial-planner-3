@@ -15,10 +15,15 @@ function PlaidLinkButtonUnsafe(props: { callback?: () => void, linkToken: string
 
     const {client, isReady} = useFPClient();
 
+    //TODO: make sure token storage is retried if client was not yet ready
     const onSuccess = useCallback((token) => {
+        console.log("Plaid onSuccess invoked");
+        console.log("isReady: " + isReady);
+        console.log("isLoading Access token: " + isLoadingAccessToken);
         if (isReady && !isLoadingAccessToken) {
             startedLoadingAccessToken();
             client.setPublicToken(token).then(() => {
+                console.log("Public Token set, callback is null: " + (callback === undefined).toString());
                 loadedAccessToken();
                 if (callback !== undefined) callback();
             })

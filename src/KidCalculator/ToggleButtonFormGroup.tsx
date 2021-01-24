@@ -10,7 +10,7 @@ import {
 } from "react-bootstrap";
 
 import { useMediaQuery } from 'react-responsive';
-import { InfoIcon } from "./InfoIcon";
+import { InfoIcon } from "../InfoIcon";
 
 const OverlayToggleButton = ({ label, buttonVariant, type, size, value, name, checked, overlay, onChange, ...rest }) => {
   return (
@@ -21,7 +21,7 @@ const OverlayToggleButton = ({ label, buttonVariant, type, size, value, name, ch
     </OverlayTrigger>
   );
 };
-
+ 
 export function ToggleButtonFormGroup(props: { label: string; labelTooltip?:string; buttonLabels: string[]; tooltipLabels?: string[]; value: number; name: string; onChange; }) {
   var vertical: boolean = !useMediaQuery({ query: `(min-width: 992px)` });
 

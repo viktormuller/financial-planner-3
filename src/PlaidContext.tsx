@@ -18,40 +18,7 @@ export interface PlaidContext {
     checkAccessToken(): boolean
 
 }
-/*
-const plaidContextProvider = {
-    _hasAccessToken: false,
-    hasLinkToken: false,
-    isLoadingLinkToken: false, 
-    isLoadingAccessToken: false, 
-    linkToken: "",
-    startedLoadingLinkToken(){
-        plaidContextProvider.isLoadingLinkToken=true;
-        plaidContextProvider.hasLinkToken = false;
-        plaidContextProvider.linkToken ="";
-    },
-     
-    setLinkToken(token:string){
-        plaidContextProvider.linkToken=token; 
-        plaidContextProvider.isLoadingLinkToken=false;       
-        plaidContextProvider.hasLinkToken=true;        
-    },
 
-    startedLoadingAccessToken(){
-        plaidContextProvider.isLoadingAccessToken = true;
-        plaidContextProvider._hasAccessToken = false;
-    },  
-
-    loadedAccessToken(){
-        plaidContextProvider._hasAccessToken =true;
-        plaidContextProvider.isLoadingAccessToken = false;
-    },
-
-    hasAccessToken(){
-        return false;
-    }
-}
-*/
 export const PLAID_CONTEXT = createContext<PlaidContext>({
     hasLinkToken: false,
     hasAccessToken: false,
@@ -68,32 +35,10 @@ export const PLAID_CONTEXT = createContext<PlaidContext>({
 
     checkAccessToken(): boolean { return false }
 });
-/*
-function usePlaidProvider() {     
-    const {client, isReady} = useFPClient();
-
-
-    function hasAccessToken(){
-        console.log("Has access token invoked.");
-        if (plaidContextProvider._hasAccessToken) {console.log("returning true");return true ;}
-        else {
-            if (isReady){
-                client.hasPlaidAccessToken().then((hasToken) => 
-                {
-                    plaidContextProvider._hasAccessToken = hasToken                    
-                })
-            }
-            console.log ("Client ready: " + isReady + " and hasAccessToken: " + plaidContextProvider._hasAccessToken);
-            return plaidContextProvider._hasAccessToken;
-        }        
-    }    
-    
-    plaidContextProvider.hasAccessToken = hasAccessToken;
-    return plaidContextProvider;
-}*/
 
 export function usePlaidContext() {
-    return useContext(PLAID_CONTEXT);
+    const plaidContext = useContext(PLAID_CONTEXT);
+    return plaidContext;
 }
 
 export function PlaidContextProvider({ children }) {
@@ -104,15 +49,9 @@ export function PlaidContextProvider({ children }) {
         hasAccessToken: false,
         isLoadingLinkToken: false,
         isLoadingAccessToken: false,
-        linkToken: "", 
+        linkToken: "",
         checkedAccessToken: false
     });
-    /*
-        const [hasLinkToken, setHasLinkToken] = useState(false);
-        const [hasAccessToken, setHasAccessToken] = useState(false);
-        const [isLoadingLinkToken, setIsLoadingLinkToken] = useState(false);
-        const [isLoadingAccessToken, setIsLoadingAccessToken] = useState(false);
-        const [linkToken, setLinkToken] = useState("");*/
 
 
 
@@ -121,7 +60,7 @@ export function PlaidContextProvider({ children }) {
         hasAccessToken,
         isLoadingLinkToken,
         isLoadingAccessToken,
-        linkToken, 
+        linkToken,
         checkedAccessToken
     } = state;
 
@@ -133,13 +72,10 @@ export function PlaidContextProvider({ children }) {
             hasAccessToken: hasAccessToken,
             isLoadingLinkToken: true,
             isLoadingAccessToken: isLoadingAccessToken,
-            linkToken: "", 
+            linkToken: "",
             checkedAccessToken: checkedAccessToken
         })
-        /*
-                setIsLoadingLinkToken(true);
-                setHasLinkToken(false);
-                setLinkToken("");*/
+
         console.log("Started loading link token");
     }
 
@@ -149,12 +85,10 @@ export function PlaidContextProvider({ children }) {
             hasAccessToken: hasAccessToken,
             isLoadingLinkToken: false,
             isLoadingAccessToken: isLoadingAccessToken,
-            linkToken: token, 
+            linkToken: token,
             checkedAccessToken: checkedAccessToken
         })
-        /*       setLinkToken(token);
-               setHasLinkToken(true);
-               setIsLoadingLinkToken(false);*/
+
         console.log("Loaded link token. hasLinkToken: " + hasLinkToken + " isLoading: " + isLoadingLinkToken);
     }
 
@@ -164,11 +98,10 @@ export function PlaidContextProvider({ children }) {
             hasAccessToken: false,
             isLoadingLinkToken: isLoadingLinkToken,
             isLoadingAccessToken: true,
-            linkToken: linkToken, 
+            linkToken: linkToken,
             checkedAccessToken: checkedAccessToken
         })
-        /*   setIsLoadingAccessToken(true);
-           setHasAccessToken(false);*/
+
     }
 
     function loadedAccessToken() {
@@ -177,19 +110,16 @@ export function PlaidContextProvider({ children }) {
             hasAccessToken: true,
             isLoadingLinkToken: isLoadingLinkToken,
             isLoadingAccessToken: false,
-            linkToken: linkToken, 
+            linkToken: linkToken,
             checkedAccessToken: checkedAccessToken
         })
-        /*    setHasAccessToken(true);
-            setIsLoadingAccessToken(false);*/
     }
 
     function checkAccessToken() {
-        console.log("Has access token invoked.");
-        if (hasAccessToken) { console.log("returning true"); return true; }
+        if (hasAccessToken) { return true; }
         //Only check for access token once
-        else if (checkedAccessToken && !isLoadingAccessToken) return false; 
-        else {            
+        else if (checkedAccessToken && !isLoadingAccessToken) return false;
+        else {
             if (isReady && !isLoadingAccessToken) {
                 setState({
                     hasLinkToken: hasLinkToken,
@@ -205,12 +135,13 @@ export function PlaidContextProvider({ children }) {
                         hasAccessToken: hasToken,
                         isLoadingLinkToken: isLoadingLinkToken,
                         isLoadingAccessToken: false,
-                        linkToken: linkToken, 
+                        linkToken: linkToken,
                         checkedAccessToken: true
                     })
                 })
             }
-            console.log("Client ready: " + isReady + " and hasAccessToken: " + hasAccessToken);
+            console.log("Client ready: " + isReady + " and hasAccessToken: " 
+                + hasAccessToken + " checked already: " + checkedAccessToken + " loading: " + isLoadingAccessToken);
             return hasAccessToken;
         }
     }
