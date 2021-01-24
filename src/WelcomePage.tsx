@@ -14,7 +14,7 @@ function useQuery() {
 
 export function WelcomePage() {
 
-
+  let {protocol, host} = useLocation();
   let history = useHistory();
   let { hasAccessToken, checkAccessToken, checkedAccessToken, isLoadingAccessToken } = usePlaidContext();
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
@@ -47,6 +47,7 @@ export function WelcomePage() {
             !isAuthenticated ?
               <Button variant="primary" onClick={() => {
                 loginWithRedirect({
+                  redirectUri: `${protocol}//${host}/networth`,
                   screen_hint: "signup"
                 })
               }}>Create an account</Button> :

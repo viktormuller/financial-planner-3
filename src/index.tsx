@@ -5,7 +5,7 @@ import React from "react";
 import { Container, Form, Nav, Navbar } from "react-bootstrap";
 import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css";
 import { render } from "react-dom";
-import { Link, Route, Router, Switch } from "react-router-dom";
+import { Link, Route, Router, Switch, useLocation } from "react-router-dom";
 import { AuthButton } from "./AuthButton";
 import { CashFlowPage } from "./CashFlowPage";
 import { KidCostCalculator } from "./KidCalculator/KidCostCalculator";
@@ -15,18 +15,25 @@ import { PlaidContextProvider } from "./PlaidContext";
 import { SuccessPage } from "./SuccessPage";
 import { WelcomePage } from "./WelcomePage";
 
-const history = createBrowserHistory(); 
+const history = createBrowserHistory();
 
 const onRedirectCallback = (appState) => {
   // Use the router's history module to replace the url
   history.replace(appState?.returnTo || window.location.pathname);
 };
 
-function PrivateRoute({ component, ...rest }) {
-  return (<Route component={withAuthenticationRequired(component)} {...rest} />)
+function PrivateRoute({ component, ...rest }) {  
+  let {pathname} = useLocation();
+  let {protocol, host} = window.location;  
+  let options = {
+    loginOptions:{
+      redirectUri: `${protocol}//${host}${pathname}`
+    } 
+  }
+  return (<Route component={withAuthenticationRequired(component, options)} {...rest} />)
 }
 
-function PrivateLink({to, children, ...rest}) {
+function PrivateLink({ to, children, ...rest }) {
   let { isAuthenticated } = useAuth0();
   return (
     <React.Fragment>
@@ -37,13 +44,9 @@ function PrivateLink({to, children, ...rest}) {
 
 //TODO: hide networth without logged in user. Probably refactor Navbar to its own component
 function App() {
-  let { protocol, host } = window.location;
-
-
   return (
     <Auth0Provider domain="dev-finplanner.us.auth0.com"
       clientId="afDzdMvPA1OWNimkuo6m9TCyr6dtfI4P"
-      redirectUri={`${protocol}//${host}/networth`}
       onRedirectCallback={onRedirectCallback}
       audience="https://api.enoughcalc.com"
       scope="crud:all">
@@ -62,7 +65,7 @@ function App() {
               <Nav>
                 <Nav.Link as={Link} to="/">Home</Nav.Link>
                 <PrivateLink to="/networth" >Net worth</PrivateLink>
-                <PrivateLink to="/cashflow" >Cash flow</PrivateLink>                          
+                <PrivateLink to="/cashflow" >Cash flow</PrivateLink>
                 <Nav.Link as={Link} to="/kidcalc">Kid cost calculator</Nav.Link>
 
               </Nav>

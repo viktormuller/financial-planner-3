@@ -25,7 +25,6 @@ export class AxiosFPClient implements FP_API {
   }
   async getCashFlowAccounts(userId?: string): Promise<FinancialAccount[]> {
     const cfAccounts = (await this.client.get<any, AxiosResponse<{ accounts: FinancialAccount[] }>>("CashFlowAccounts")).data.accounts;
-    console.log(cfAccounts);
     return cfAccounts;
   }
   async getHoldings(): Promise<Holding[]> {
