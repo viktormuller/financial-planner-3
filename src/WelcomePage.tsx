@@ -14,7 +14,7 @@ function useQuery() {
 
 export function WelcomePage() {
 
-  let {protocol, host} = useLocation();
+  let {protocol, host} = window.location;
   let history = useHistory();
   let { hasAccessToken, checkAccessToken, checkedAccessToken, isLoadingAccessToken } = usePlaidContext();
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
@@ -35,7 +35,7 @@ export function WelcomePage() {
   return (
 
     <Jumbotron>
-      <h1>Welcome to Enough Calculator!</h1>
+      <h1>Welcome to MoneySure!</h1>
       <p>
         Your financial advisor{advisor ? ", " + advisor.name + " from " + advisor.company : " "} asked us to help collect some data.
           They will use it to prepare for your next meeting.

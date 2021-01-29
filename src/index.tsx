@@ -58,7 +58,7 @@ function App() {
                 alt=""
                 width="30"
                 height="30"
-                className="d-inline-block align-top" /> How much is enough?
+                className="d-inline-block align-top" />MoneySure
             </Navbar.Brand>
             <Navbar.Toggle />
             <Navbar.Collapse>
